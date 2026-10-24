@@ -343,7 +343,10 @@ async function schermMeldingen(houder) {
               toast(n ? 'Testmelding verstuurd.' : 'Geen gekoppelde toestellen gevonden.');
             } catch (fout) { toast(fout.message); }
           },
-        }, 'Testmelding')));
+        }, 'Testmelding')),
+      el('p', { className: 'klein', style: 'margin-top:14px' }, 'setAppBadge' in navigator
+        ? 'Rood bolletje op het icoon: ondersteund. Zie je het niet, kijk dan in Instellingen, Meldingen, Konijnenklas of "Badges" aan staat.'
+        : 'Rood bolletje op het icoon: niet ondersteund in deze browser (op een iPhone alleen vanaf het beginscherm).'));
   }
   houder.replaceChildren(el('div', { className: 'kaart' }, el('h2', {}, 'Meldingen'), ...stappen));
 }
