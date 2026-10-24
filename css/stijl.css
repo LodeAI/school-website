@@ -107,7 +107,7 @@ button, input, select { font: inherit; color: inherit; }
 }
 .thema-knop svg { width: 20px; height: 20px; }
 
-.inhoud { max-width: 640px; margin: 0 auto; padding: 20px 16px 32px; }
+.inhoud { max-width: 640px; margin: 0 auto; padding: 20px 16px 8px; }
 .kaart {
   background: var(--kaart); border-radius: var(--straal); box-shadow: var(--schaduw);
   padding: 20px;
@@ -466,3 +466,10 @@ dialog ul { margin: 10px 0 0; padding-left: 20px; }
 .klein-link { font-size: 14px; padding: 2px 0; flex: none; }
 .link:disabled { opacity: .4; cursor: default; }
 .selectie-rij { margin-top: -4px; gap: 16px; }
+
+/* Voettekst met copyright */
+.voet {
+  max-width: 640px; margin: 0 auto; padding: 4px 16px calc(16px + env(safe-area-inset-bottom));
+  text-align: center; font-size: 12px; color: var(--zacht);
+}
+.voet a { color: inherit; text-underline-offset: 2px; }
