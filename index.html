@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ffffff">
+  <title>Konijnenklas: maaltijden en opvang</title>
+  <link rel="icon" href="img/konijn.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/icoon-180.png">
+  <link rel="preload" href="fonts/atkinson-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/atkinson-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/stijl.css">
+  <script src="js/vendor/supabase.js" defer></script>
+  <script type="module" src="js/ouder.js"></script>
+</head>
+<body>
+  <div class="demo-band" id="demoBand" hidden>Demo: niets wordt echt verstuurd</div>
+  <header class="kop">
+    <div class="kop-binnen">
+      <img class="logo" src="img/konijn.svg" alt="">
+      <div>
+        <div class="kop-titel" id="klasTitel">Konijnenklas</div>
+        <div class="kop-sub" id="schoolTitel">Maaltijden en opvang</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="inhoud">
+    <section class="kaart start" id="start">
+      <h1>Maaltijden en opvang</h1>
+      <p class="uitleg">Kies je klas en de naam van je kind.</p>
+
+      <label for="klas">Klas</label>
+      <select id="klas"><option value="">Even geduld…</option></select>
+
+      <label for="kind">Naam van je kind</label>
+      <select id="kind" disabled><option value="">Kies eerst de klas</option></select>
+
+      <form id="controle" hidden>
+        <label for="achternaam">Typ ter controle de achternaam van je kind</label>
+        <input type="text" id="achternaam" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="go">
+        <p class="fout" id="startFout" role="alert"></p>
+        <button class="knop hoofd breed" type="submit" id="verder">Verder</button>
+      </form>
+    </section>
+
+    <section id="werk" hidden>
+      <div class="kind-balk">
+        <div>
+          <div class="klein">Je vult in voor</div>
+          <h1 id="kindNaam"></h1>
+        </div>
+        <button class="link" type="button" id="anderKind">Ander kind</button>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tabMaaltijden" aria-controls="paneelMaaltijden" aria-selected="true">Maaltijden</button>
+        <button class="tab" role="tab" id="tabOpvang" aria-controls="paneelOpvang" aria-selected="false">Opvang</button>
+      </div>
+
+      <div class="paneel" id="paneelMaaltijden" role="tabpanel" aria-labelledby="tabMaaltijden"></div>
+      <div class="paneel" id="paneelOpvang" role="tabpanel" aria-labelledby="tabOpvang" hidden></div>
+    </section>
+  </main>
+
+  <dialog id="bevestig">
+    <form method="dialog">
+      <h2 id="bevestigTitel"></h2>
+      <div id="bevestigTekst"></div>
+      <div class="dialoog-knoppen">
+        <button class="knop" value="nee">Annuleren</button>
+        <button class="knop hoofd" value="ja">Versturen</button>
+      </div>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

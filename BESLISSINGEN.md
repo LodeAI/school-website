@@ -16,11 +16,19 @@
 14. **Woorden:** "dommelen" (middagdutje) en "vegi" zoals ze zijn. Geen bevestigingsmail.
 15. **Hosting en git:** GitHub-account LodeAI, voorlopig op een github.io-adres. Later misschien `konijnenklas.lvit.be`, te beslissen na de proof of concept. Commits als Lode Verschelde met het e-mailadres van LodeAI.
 
-## Open vragen (ronde 2)
+## Beslissingen ronde 2 (2026-10-24)
 
-A. Gsm van de leerkracht (iPhone of Android) en keuze voor de opslag- en meldingsdienst.
-B. (vraag 9) Kan de leerkracht een verstuurde maaltijdmaand terug openzetten?
-C. (vraag 11) Twee ouders bij één kind: wat moet er gebeuren bij maaltijden?
-D. Pedagogische studiedagen (verschillen per school): manueel door de leerkracht?
-E. Opvang: welke uren zijn bedoeld met "tot de dag voordien"?
-F. Repo openbaar (nodig voor gratis GitHub Pages) of privé?
+A. **iPhone.** Supabase (eigen account van Lode, gescheiden van de Nutri-projecten) bewaart de gegevens en bewaakt de regels op de server. De leerkrachtensite is een web-app op het beginscherm die pushmeldingen krijgt (iOS 16.4 of nieuwer).
+B. **Versturen vergrendelt niets.** Een maaltijdmaand ligt pas vast vanaf de eerste dag van die maand. Tot en met de laatste dag van de vorige maand kan een ouder blijven aanpassen en opnieuw versturen. Dit vervangt "greyed out na versturen" uit de brief.
+C. **Twee ouders:** allebei kunnen aanpassen tot de maand begint. De laatste inzending telt.
+D. **Studiedagen en andere vrije dagen van de school** voegt de leerkracht zelf toe op de beheerpagina.
+E. **Opvang:** een dag aanpassen kan tot en met 23:59 de dag voordien (Belgische tijd).
+F. **Openbare repo** `LodeAI/school-website` op gratis GitHub Pages. De gegevens van de kinderen staan nooit in de repo. Lode maakt de repo zelf aan.
+
+## Afgeleide keuzes (door Claude, aan te passen)
+
+- Eén verstuurknop per tabblad verstuurt alle gewijzigde maanden in één keer, met één melding.
+- Er gaat alleen een melding uit als er echt iets veranderde. Bij opvang staat in de melding welke dagen erbij of eraf gingen.
+- Een tik op een dag kiest die dag; "Losse dagen" is dus altijd mogelijk.
+- Lettertype Atkinson Hyperlegible (gemaakt voor leesbaarheid), zelf gehost, niet via Google.
+- Leerkracht meldt aan met alleen een wachtwoord. Onder de motorkap is dat een Supabase-gebruiker met een vast e-mailadres dat nergens getoond wordt.

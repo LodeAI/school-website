@@ -1,0 +1,14 @@
+{
+  "name": "Konijnenklas leerkracht",
+  "short_name": "Konijnenklas",
+  "lang": "nl-BE",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ed",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "../img/icoon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "../img/icoon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
