@@ -1,7 +1,7 @@
 // Leerkrachtensite: kinderen en hun fiche, klasgegevens, vrije dagen en pushmeldingen.
 // Schermen via het adres: #kinderen, #kind=<id>, #klas, #vrij, #meldingen.
 
-import { api, DEMO } from './api.js';
+import { api, DEMO, opAchternaam } from './api.js';
 import { themaKnop } from './thema.js';
 import { CONFIG } from './config.js';
 import {
@@ -84,8 +84,7 @@ function toonScherm() {
 }
 
 async function schermKinderen(houder) {
-  const kinderen = (await api.leerkrachtKinderen(s.klas.id))
-    .sort((a, b) => a.voornaam.localeCompare(b.voornaam) || a.achternaam.localeCompare(b.achternaam));
+  const kinderen = (await api.leerkrachtKinderen(s.klas.id)).sort(opAchternaam);
   const lijst = el('ul', { className: 'lijst' });
   const zoek = el('input', { type: 'text', className: 'zoek', placeholder: 'Zoek een kind', 'aria-label': 'Zoek een kind' });
   const vul = () => {

@@ -39,3 +39,4 @@ F. **Openbare repo** `LodeAI/school-website` op gratis GitHub Pages. De gegevens
 - 2026-10-24: lichte en donkere modus met een knop rechtsboven, bewaard in een cookie op het toestel. Standaard licht, los van de instelling van het toestel.
 - 2026-10-24: bij het wisselen van tabblad met niet verstuurde wijzigingen: pop-up "Ben je zeker? Je hebt nog niet verstuurd naar de leerkracht." (Annuleren of Wisselen). Wie wisselt, verliest niets: de wijzigingen blijven staan tot de ouder terugkomt.
 - 2026-10-24: rood bolletje op het icoon van de leerkrachtapp (iPhone-beginscherm) met het aantal meldingen sinds de app laatst open was. Openen zet het terug op nul.
+- 2026-10-24: alle lijsten van kinderen gesorteerd op achternaam, dan voornaam, maar getoond als "Voornaam Achternaam". "Van Daele" staat dus bij de V.

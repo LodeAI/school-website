@@ -155,6 +155,9 @@ function demoBewaren(s) {
 let demoStaat = null;
 const ds = () => (demoStaat ??= demoLaden());
 const wacht = (waarde) => new Promise((r) => setTimeout(() => r(structuredClone(waarde)), 150));
+// Sortering van kinderen: achternaam, dan voornaam, zonder onderscheid tussen hoofd- en kleine letters.
+export const opAchternaam = (a, b) => a.achternaam.localeCompare(b.achternaam, 'nl', { sensitivity: 'base' })
+  || a.voornaam.localeCompare(b.voornaam, 'nl', { sensitivity: 'base' });
 const norm = (t) => (t ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
 
 function demoControle(kindId, achternaam) {
@@ -172,7 +175,7 @@ const demoApi = {
   klassen: () => wacht([{ id: ds().klas.id, naam: ds().klas.naam, leerjaar: ds().klas.leerjaar, school: ds().school.naam }]),
   kinderen: () => wacht(ds().kinderen.filter((k) => k.actief)
     .map(({ id, voornaam, achternaam }) => ({ id, voornaam, achternaam }))
-    .sort((a, b) => a.voornaam.localeCompare(b.voornaam))),
+    .sort(opAchternaam)),
   gegevens(kindId, achternaam) {
     demoControle(kindId, achternaam);
     const vandaag = vandaagBrussel();
