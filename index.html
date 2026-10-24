@@ -39,7 +39,8 @@
 
       <form id="controle" hidden>
         <label for="achternaam">Typ ter controle de achternaam van je kind</label>
-        <input type="text" id="achternaam" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="go">
+        <p class="hulp" id="achternaamHulp">Zo zijn we zeker dat niemand per vergissing voor een ander kind invult. Hoofdletters maken niet uit.</p>
+        <input type="text" id="achternaam" aria-describedby="achternaamHulp" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="go">
         <p class="fout" id="startFout" role="alert"></p>
         <button class="knop hoofd breed" type="submit" id="verder">Verder</button>
       </form>
