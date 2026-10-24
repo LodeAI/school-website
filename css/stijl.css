@@ -127,7 +127,7 @@ select {
 input:focus-visible, select:focus-visible, button:focus-visible {
   outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px;
 }
-.hulp { color: var(--zacht); font-size: 15px; margin: -2px 0 8px; }
+.hulp { color: var(--zacht); font-size: 13px; line-height: 1.4; margin: -2px 0 8px; }
 .fout { color: var(--fout); font-weight: 700; margin-top: 10px; min-height: 0; }
 .fout:empty { display: none; }
 

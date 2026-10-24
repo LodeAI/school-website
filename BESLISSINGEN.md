@@ -35,5 +35,5 @@ F. **Openbare repo** `LodeAI/school-website` op gratis GitHub Pages. De gegevens
 
 ## Na de eerste versie
 
-- 2026-10-24: uitleg onder de achternaamcontrole, waarom ouders de achternaam opnieuw typen.
+- 2026-10-24: uitleg onder de achternaamcontrole, waarom ouders de achternaam opnieuw typen (klein lettertype, zonder zin over hoofdletters).
 - 2026-10-24: lichte en donkere modus met een knop rechtsboven, bewaard in een cookie op het toestel. Standaard licht, los van de instelling van het toestel.
