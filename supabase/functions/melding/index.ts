@@ -7,7 +7,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2.117.3";
 import webpush from "npm:web-push@3.6.7";
 
-const SITE_URL = Deno.env.get("SITE_URL")!; // bv. https://lodeai.github.io/school-website/
+const SITE_URL = Deno.env.get("SITE_URL")!; // https://konijnenklas.lvit.be/
 const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
 webpush.setVapidDetails(SITE_URL, Deno.env.get("VAPID_PUBLIC_KEY")!, Deno.env.get("VAPID_PRIVATE_KEY")!);
