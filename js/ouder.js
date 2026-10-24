@@ -201,7 +201,7 @@ function maandKiezer(actief, status, kies) {
       return el('button', {
         type: 'button', className: klassen, onclick: () => kies(m),
         'aria-pressed': String(m === actief), 'aria-label': maandLabel(m),
-      }, el('b', {}, maandKort(m)), el('small', {}, m.slice(0, 4)), el('span', { className: 'maand-stip' }));
+      }, el('b', {}, maandKort(m)), el('span', { className: 'maand-stip' }));
     }));
   requestAnimationFrame(() => {
     const knop = rij.querySelector('.actief');
@@ -235,7 +235,7 @@ function verstuurBalk(soort, gewijzigd, laatst, versturen) {
   const status = gewijzigd.length
     ? `Nog niet verstuurd: ${gewijzigd.map(maandLabel).join(', ')}`
     : laatst ? `Laatst verstuurd op ${tijdstipLabel(laatst)}` : 'Nog niets verstuurd';
-  return el('div', { className: 'verstuur-balk' },
+  return el('div', { className: 'verstuur-balk' + (gewijzigd.length ? ' plakt' : '') },
     el('p', { className: 'verstuur-status' + (gewijzigd.length ? ' open' : '') }, status),
     el('button', {
       type: 'button', className: 'knop hoofd breed', disabled: !gewijzigd.length || s.bezig, onclick: versturen,
@@ -304,10 +304,30 @@ function tekenMaaltijden() {
   });
 }
 
+// Rooster met de zes keuzes: kolommen warm, vegi, boterhammen; rijen zonder en met dommelen.
 function keuzeKnoppen(kies, uit = false) {
-  return el('div', { className: 'keuzes' }, KEUZES.map((k) => el('button', {
-    type: 'button', className: 'keuze', disabled: uit, onclick: () => kies(k.code),
-  }, keuzeBol(k.code), k.label)));
+  const soorten = [['warm', 'Warm'], ['vegi', 'Vegi'], ['boterhammen', 'Boterhammen']];
+  const rij = (titel, voorvoegsel) => [
+    el('span', { className: 'matrix-rij' }, titel),
+    ...soorten.map(([soort]) => {
+      const code = voorvoegsel + soort;
+      return el('button', {
+        type: 'button', className: 'keuze', disabled: uit, onclick: () => kies(code),
+        'aria-label': KEUZE[code].label, title: KEUZE[code].label,
+      }, keuzeBol(code));
+    }),
+  ];
+  return el('div', { className: 'keuze-matrix', role: 'group', 'aria-label': 'Maaltijd' },
+    el('span'), soorten.map(([, titel]) => el('span', { className: 'matrix-kolom' }, titel)),
+    rij('Zonder dommelen', ''), rij('Met dommelen', 'dommelen_'));
+}
+
+// Uitlegregel met rechts kleine linkknoppen (bv. "Leegmaken").
+function uitlegRij(tekst, ...knoppen) {
+  return el('div', { className: 'uitleg-rij' }, el('p', { className: 'opties-uitleg' }, tekst), ...knoppen);
+}
+function linkKnop(tekst, actie, uit = false) {
+  return el('button', { type: 'button', className: 'link klein-link', disabled: uit, onclick: actie }, tekst);
 }
 
 function maaltijdOpties(m) {
@@ -318,18 +338,16 @@ function maaltijdOpties(m) {
 
   if (s.m.modus === 'maand') {
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, `Eén tik vult alle ${dagen.length} maaltijddagen van ${naam} in.`),
+      uitlegRij(`Eén tik vult alle ${dagen.length} dagen van ${naam} in.`,
+        linkKnop('Leegmaken', () => { vulMaaltijden(dagen, null); tekenMaaltijden(); })),
       keuzeKnoppen((code) => {
         vulMaaltijden(dagen, code);
         tekenMaaltijden();
         toast(`Hele maand: ${KEUZE[code].label.toLowerCase()}`);
-      }),
-      el('div', { className: 'opties-rij' }, el('button', {
-        type: 'button', className: 'knop klein-knop', onclick: () => { vulMaaltijden(dagen, null); tekenMaaltijden(); },
-      }, `${hoofdletter(naam)} leegmaken`)));
+      }));
   } else if (s.m.modus === 'vast') {
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, 'Kies per weekdag wat je kind eet, voor de hele maand.'),
+      el('p', { className: 'opties-uitleg' }, 'Kies per weekdag, voor heel de maand.'),
       el('div', { className: 'vaste-dagen' }, MAALTIJDDAGEN.map((wd) => el('label', { className: 'vaste-dag' },
         el('span', {}, hoofdletter(DAGEN[wd - 1])),
         el('select', { onchange: (e) => { s.m.vast[wd] = e.target.value; } },
@@ -350,23 +368,16 @@ function maaltijdOpties(m) {
   } else {
     const n = s.m.selectie.size;
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, n
-        ? `${meervoud(n, 'dag', 'dagen')} gekozen. Kies nu de maaltijd.`
-        : 'Tik op een of meer dagen in de kalender en kies dan de maaltijd.'),
+      uitlegRij(n
+        ? `${meervoud(n, 'dag', 'dagen')} gekozen, kies de maaltijd.`
+        : 'Tik dagen aan in de kalender, kies dan de maaltijd.',
+      n ? linkKnop('Leegmaken', () => { vulMaaltijden(s.m.selectie, null); s.m.selectie.clear(); tekenMaaltijden(); }) : null,
+      n ? linkKnop('Wissen', () => { s.m.selectie.clear(); tekenMaaltijden(); }) : null),
       keuzeKnoppen((code) => {
         vulMaaltijden(s.m.selectie, code);
         s.m.selectie.clear();
         tekenMaaltijden();
-      }, !n),
-      el('div', { className: 'opties-rij' },
-        el('button', {
-          type: 'button', className: 'knop klein-knop', disabled: !n,
-          onclick: () => { vulMaaltijden(s.m.selectie, null); s.m.selectie.clear(); tekenMaaltijden(); },
-        }, 'Leegmaken'),
-        el('button', {
-          type: 'button', className: 'knop klein-knop', disabled: !n,
-          onclick: () => { s.m.selectie.clear(); tekenMaaltijden(); },
-        }, 'Selectie wissen')));
+      }, !n));
   }
   return el('div', { className: 'opties' }, inhoud);
 }
@@ -445,7 +456,7 @@ function opvangOpties(m, openDagen) {
 
   if (s.o.modus === 'maand') {
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, `Voor alle ${openDagen.length} dagen van ${naam} die nog kunnen. Je kan daarna nog losse dagen aan- of uittikken.`),
+      el('p', { className: 'opties-uitleg' }, `Alle ${openDagen.length} dagen van ${naam} die nog kunnen. Losse dagen tik je in de kalender aan of uit.`),
       el('div', { className: 'opties-rij' },
         el('button', { type: 'button', className: 'knop hoofd', onclick: () => { zetOpvang(openDagen, true); tekenOpvang(); } },
           'Elke dag opvang'),
@@ -459,7 +470,7 @@ function opvangOpties(m, openDagen) {
       weken.get(maandag).push(d);
     }
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, 'Tik op een week om alle dagen van die week aan of uit te zetten.'),
+      el('p', { className: 'opties-uitleg' }, 'Tik op een week om ze aan of uit te zetten.'),
       el('div', { className: 'weken' }, [...weken].map(([maandag, dagen]) => {
         const aan = dagen.filter((d) => s.o.concept.has(d)).length;
         const [eerste, laatste] = [dagen[0], dagen.at(-1)];
@@ -474,7 +485,7 @@ function opvangOpties(m, openDagen) {
       })));
   } else {
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, `Kies de weekdagen en zet ze aan of uit voor heel ${naam}.`),
+      el('p', { className: 'opties-uitleg' }, `Kies weekdagen voor heel ${naam}.`),
       el('div', { className: 'weekdagen' }, [1, 2, 3, 4, 5].map((wd) => el('label', { className: 'vinkje' },
         el('input', {
           type: 'checkbox', checked: s.o.vast.has(wd),

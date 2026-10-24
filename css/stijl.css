@@ -389,3 +389,73 @@ dialog ul { margin: 10px 0 0; padding-left: 20px; }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }
 }
+
+/* Ouderpagina compact op een smartphone: de kalender moet zonder scrollen in beeld komen. */
+.kind-balk { align-items: center; margin-bottom: 10px; }
+.kind-naam { font-size: 18px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kind-naam .klein { font-size: 14px; }
+.verstuur-balk { position: static; }
+.verstuur-balk.plakt { position: sticky; }
+
+@media (max-width: 519px) {
+  .kop-binnen { padding: 8px 16px; gap: 10px; }
+  .logo { width: 32px; height: 32px; }
+  .kop-titel { font-size: 17px; line-height: 1.2; }
+  .kop-sub { font-size: 13px; line-height: 1.2; }
+  .thema-knop { width: 38px; height: 38px; }
+  .inhoud { padding-top: 12px; }
+  .kaart { padding: 16px; }
+
+  .tabs { margin-bottom: 10px; padding: 3px; }
+  .tab { min-height: 40px; }
+  .maanden { gap: 5px; padding-bottom: 6px; }
+  .maand { min-width: 46px; min-height: 40px; padding: 2px 6px; gap: 2px; }
+  .maand b { font-size: 14px; }
+  .maand-kop { margin: 6px 0 2px; }
+  .maand-kop h2 { font-size: 17px; }
+  .maand-kop .status { font-size: 13px; margin-top: 0; }
+
+  .opties { margin: 8px 0 10px; padding: 10px; }
+  .segment { margin-bottom: 8px; padding: 3px; }
+  .segment button { min-height: 34px; font-size: 14px; }
+  .opties-uitleg { font-size: 13px; margin-bottom: 8px; }
+  .keuzes { gap: 6px; }
+  .keuze { min-height: 40px; padding: 4px 8px; font-size: 14px; border-radius: 10px; }
+  .vaste-dagen { gap: 6px; margin-bottom: 8px; }
+  .vaste-dag { grid-template-columns: 84px 1fr; }
+  .vaste-dag select { min-height: 38px; padding: 6px 36px 6px 10px; }
+  .vaste-dagen + .knop, .opties .knop.hoofd.breed { min-height: 42px; }
+  .opties-rij { margin-top: 6px; gap: 6px; }
+  .knop.klein-knop { min-height: 36px; }
+  .weken { gap: 6px; }
+  .week { min-height: 40px; }
+  .vinkje { min-height: 38px; padding: 6px 10px; }
+  .opties .knop { min-height: 42px; }
+
+  .kalender { gap: 2px; }
+  .kalender-kop { font-size: 12px; padding-bottom: 2px; }
+  .dag { min-height: 52px; gap: 2px; padding-top: 3px; }
+  .dag-cirkel { width: 36px; height: 36px; font-size: 15px; }
+  .dag-label { font-size: 10px; line-height: 12px; min-height: 12px; }
+  .dag-maan { width: 16px; height: 16px; top: -5px; left: -5px; }
+  .dag-maan svg { width: 11px; height: 11px; }
+
+  .legende { margin-top: 10px; gap: 6px 12px; font-size: 13px; }
+  .vrije-lijst { margin-top: 8px; font-size: 13px; }
+  .verstuur-balk { margin-top: 12px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .verstuur-status { font-size: 13px; margin-bottom: 6px; }
+  .verstuur-balk .knop { min-height: 46px; }
+}
+
+/* Rooster met maaltijdkeuzes */
+.keuze-matrix { display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); gap: 6px; align-items: center; }
+.matrix-kolom { text-align: center; font-size: 13px; font-weight: 700; color: var(--zacht); }
+.matrix-rij { font-size: 13px; font-weight: 700; color: var(--zacht); line-height: 1.2; max-width: 84px; }
+.keuze-matrix .keuze { justify-content: center; min-height: 44px; padding: 4px; }
+.keuze-matrix .bol { width: 28px; height: 28px; font-size: 13px; }
+.keuze-matrix .bol .dag-maan { width: 16px; height: 16px; top: -6px; left: -7px; }
+.keuze-matrix .bol .dag-maan svg { width: 11px; height: 11px; }
+.uitleg-rij { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+.uitleg-rij .opties-uitleg { margin: 0; flex: 1; }
+.klein-link { font-size: 14px; padding: 2px 0; flex: none; }
+.link:disabled { opacity: .4; cursor: default; }
