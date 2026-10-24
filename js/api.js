@@ -70,9 +70,16 @@ const supabaseApi = {
     const kinderen = await q(sb().from('kinderen')
       .select('id, voornaam, achternaam').eq('klas_id', klasId).eq('actief', true));
     const ids = kinderen.map((k) => k.id);
-    const laatste = ids.length ? await q(sb().from('inzendingen')
-      .select('kind_id, tijdstip').in('kind_id', ids).order('tijdstip', { ascending: false }).limit(500)) : [];
-    return kinderen.map((k) => ({ ...k, laatst: laatste.find((i) => i.kind_id === k.id)?.tijdstip ?? null }));
+    const [laatste, ongezien] = ids.length ? await Promise.all([
+      q(sb().from('inzendingen').select('kind_id, tijdstip').in('kind_id', ids)
+        .order('tijdstip', { ascending: false }).limit(500)),
+      q(sb().from('inzendingen').select('kind_id, soort').in('kind_id', ids).eq('gezien', false)),
+    ]) : [[], []];
+    return kinderen.map((k) => ({
+      ...k,
+      laatst: laatste.find((i) => i.kind_id === k.id)?.tijdstip ?? null,
+      nieuw: new Set(ongezien.filter((i) => i.kind_id === k.id).map((i) => i.soort)),
+    }));
   },
   async kindBewaren(kind) {
     const rij = { voornaam: kind.voornaam, achternaam: kind.achternaam };
@@ -86,9 +93,11 @@ const supabaseApi = {
       q(sb().from('kinderen').select('id, voornaam, achternaam, klas_id').eq('id', kindId).single()),
       q(sb().from('maaltijden').select('datum, keuze').eq('kind_id', kindId).gte('datum', van).lte('datum', tot)),
       q(sb().from('opvang').select('datum').eq('kind_id', kindId).gte('datum', van).lte('datum', tot)),
-      q(sb().from('inzendingen').select('soort, samenvatting, details, tijdstip').eq('kind_id', kindId)
+      q(sb().from('inzendingen').select('soort, samenvatting, details, tijdstip, gezien').eq('kind_id', kindId)
         .order('tijdstip', { ascending: false }).limit(50)),
     ]);
+    // De fiche is bekeken: alles van dit kind geldt nu als gezien.
+    await q(sb().from('inzendingen').update({ gezien: true }).eq('kind_id', kindId).eq('gezien', false));
     return {
       kind,
       maaltijden: Object.fromEntries(maaltijden.map((m) => [m.datum, m.keuze])),
@@ -167,7 +176,7 @@ function demoControle(kindId, achternaam) {
 }
 const demoVrij = (d) => ds().vrij.find((v) => v.datum === d);
 function demoMelding(kindId, soort, samenvatting, details) {
-  ds().inzendingen.unshift({ kind_id: kindId, soort, samenvatting, details, tijdstip: new Date().toISOString() });
+  ds().inzendingen.unshift({ kind_id: kindId, soort, samenvatting, details, gezien: false, tijdstip: new Date().toISOString() });
   demoBewaren(ds());
 }
 
@@ -255,8 +264,10 @@ const demoApi = {
     demoBewaren(ds());
     return wacht(null);
   },
-  leerkrachtKinderen: () => wacht(ds().kinderen.filter((k) => k.actief).map((k) => ({
-    ...k, laatst: ds().inzendingen.find((i) => i.kind_id === k.id)?.tijdstip ?? null,
+  leerkrachtKinderen: () => Promise.resolve(ds().kinderen.filter((k) => k.actief).map((k) => ({
+    ...k,
+    laatst: ds().inzendingen.find((i) => i.kind_id === k.id)?.tijdstip ?? null,
+    nieuw: new Set(ds().inzendingen.filter((i) => i.kind_id === k.id && !i.gezien).map((i) => i.soort)),
   }))),
   kindBewaren(kind) {
     if (kind.id) Object.assign(ds().kinderen.find((k) => k.id === kind.id), { voornaam: kind.voornaam, achternaam: kind.achternaam });
@@ -271,12 +282,16 @@ const demoApi = {
   },
   fiche(kindId, van, tot) {
     const binnen = (d) => d >= van && d <= tot;
-    return wacht({
+    const resultaat = {
       kind: ds().kinderen.find((k) => k.id === kindId),
       maaltijden: Object.fromEntries(Object.entries(ds().maaltijden[kindId] ?? {}).filter(([d]) => binnen(d))),
       opvang: (ds().opvang[kindId] ?? []).filter(binnen),
       inzendingen: ds().inzendingen.filter((i) => i.kind_id === kindId).slice(0, 50),
-    });
+    };
+    const kopie = structuredClone(resultaat);
+    ds().inzendingen.filter((i) => i.kind_id === kindId).forEach((i) => { i.gezien = true; });
+    demoBewaren(ds());
+    return wacht(kopie);
   },
   vrijeDagen: (schoolId, van, tot) => wacht(ds().vrij.filter((v) => v.datum >= van && v.datum <= tot)
     .sort((a, b) => a.datum.localeCompare(b.datum))),

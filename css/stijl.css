@@ -36,6 +36,8 @@
   --boter-tekst: #6e5719;
   --maan: #5f6b9c;
   --fout: #a8473b;
+  --rood: #c2453a;
+  --blauw: #3d6db5;
   --straal: 16px;
   --schaduw: 0 1px 2px rgba(44, 54, 49, .06), 0 4px 16px rgba(44, 54, 49, .05);
 }
@@ -64,6 +66,8 @@
   --boter-tekst: #ebd89f;
   --maan: #a3aee0;
   --fout: #e48f82;
+  --rood: #c9564b;
+  --blauw: #4a7bc4;
   --schaduw: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 16px rgba(0, 0, 0, .2);
 }
 :root[data-thema=donker] .dag.gekozen .dag-cirkel::after { background-color: #3f6b4f; }
@@ -347,6 +351,17 @@ dialog ul { margin: 10px 0 0; padding-left: 20px; }
 .rij b { display: block; }
 .rij small { color: var(--zacht); font-size: 14px; }
 .rij-pijl { color: var(--zacht); flex: none; }
+.rij-rechts { display: flex; align-items: center; gap: 6px; flex: none; }
+.nieuw-bol {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; font-size: 13px; font-weight: 700; line-height: 1;
+}
+.nieuw-bol.maaltijden { background: var(--rood); }
+.nieuw-bol.opvang { background: var(--blauw); }
+.label-nieuw {
+  display: inline-block; margin-left: 6px; font-size: 12px; font-weight: 700; border-radius: 6px; padding: 1px 6px;
+  background: var(--rood); color: #fff;
+}
 .zoek { margin-bottom: 8px; }
 .formulier-rij { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .formulier-rij label { margin-top: 12px; }

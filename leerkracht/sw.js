@@ -36,6 +36,8 @@ self.addEventListener('push', (e) => {
 
 self.addEventListener('notificationclick', (e) => {
   e.notification.close();
+  // De leerkracht kiest zelf welk kind: de pagina mag niet naar de kinderlijst springen.
+  e.waitUntil(caches.open('konijnenklas-badge').then((c) => c.delete('teller')).catch(() => {}));
   const url = new URL(e.notification.data?.url || './', self.registration.scope).href;
   e.waitUntil((async () => {
     const vensters = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });

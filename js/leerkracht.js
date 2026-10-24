@@ -25,7 +25,10 @@ async function start() {
   $('demoBand').hidden = !DEMO;
   if ('serviceWorker' in navigator && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});
   navigator.serviceWorker?.addEventListener('message', (e) => {
-    if (e.data?.openen) location.href = e.data.openen;
+    if (e.data?.openen) {
+      laatsteMeldingTik = Date.now();
+      location.href = e.data.openen;
+    }
   });
   if (await api.sessie()) await openApp();
   else toonAanmelden();
@@ -58,6 +61,7 @@ async function openApp() {
   $('klasTitel').textContent = s.klas?.naam ?? 'Konijnenklas';
   await laadVrijeDagen();
   toonScherm();
+  bijOpenen();
 }
 
 async function laadVrijeDagen() {
@@ -95,7 +99,10 @@ async function schermKinderen(houder) {
         type: 'button', className: 'rij', onclick: () => { location.hash = `kind=${k.id}`; },
       }, el('span', {}, el('b', {}, `${k.voornaam} ${k.achternaam}`),
         el('small', {}, k.laatst ? `Laatst ingevuld ${tijdstipLabel(k.laatst)}` : 'Nog niets ingevuld')),
-      el('span', { className: 'rij-pijl', 'aria-hidden': 'true' }, '›')))));
+      el('span', { className: 'rij-rechts' },
+        k.nieuw?.has('maaltijden') && el('span', { className: 'nieuw-bol maaltijden', title: 'Maaltijden gewijzigd', 'aria-label': 'Maaltijden gewijzigd' }, 'M'),
+        k.nieuw?.has('opvang') && el('span', { className: 'nieuw-bol opvang', title: 'Opvang gewijzigd', 'aria-label': 'Opvang gewijzigd' }, 'O'),
+        el('span', { className: 'rij-pijl', 'aria-hidden': 'true' }, '›'))))));
     if (!lijst.children.length) lijst.append(el('li', { className: 'klein' }, kinderen.length ? 'Geen kind gevonden.' : 'Nog geen kinderen.'));
   };
   zoek.addEventListener('input', vul);
@@ -182,6 +189,7 @@ async function schermFiche(houder, kindId) {
         ? fiche.inzendingen.map((i) => el('div', { className: 'inzending' },
           el('span', { className: `label-soort ${i.soort}` }, i.soort === 'maaltijden' ? 'Maaltijden' : 'Opvang'),
           i.samenvatting.replace(/^(Maaltijden|Opvang) /, ''),
+          i.gezien === false && el('span', { className: 'label-nieuw' }, 'Nieuw'),
           el('small', {}, tijdstipLabel(i.tijdstip))))
         : el('p', { className: 'klein' }, 'Nog niets ingevuld.'))),
     el('div', { className: 'kaart' },
@@ -374,13 +382,32 @@ function base64NaarBytes(tekst) {
   return Uint8Array.from(atob(opgevuld), (c) => c.charCodeAt(0));
 }
 
-// Rood bolletje op het icoon wissen zodra de app open is (de service worker telt op).
-async function bolletjeWissen() {
-  if (document.visibilityState !== 'visible') return;
+// Bij het openen van de app (of terugkeren ernaar): stond er een rood bolletje op het icoon,
+// dan naar Kinderen, waar de M- en O-bolletjes tonen wie iets wijzigde. Een tik op een melding
+// gaat voor: die opent de fiche van het kind (bij een koude start staat dat al in het adres).
+let laatsteMeldingTik = location.hash.startsWith('#kind=') ? Date.now() : 0;
+
+async function aantalOpIcoon() {
+  let n = 0;
+  try {
+    const r = await (await caches.open('konijnenklas-badge')).match('teller');
+    if (r) n = Number(await r.text()) || 0;
+  } catch { /* geen opslag */ }
+  return n;
+}
+
+async function bijOpenen() {
+  if (document.visibilityState !== 'visible' || $('app').hidden) return;
+  await new Promise((klaar) => setTimeout(klaar, 400)); // een bericht van een melding-tik eerst laten binnenkomen
+  const nieuw = await aantalOpIcoon();
   try {
     await navigator.clearAppBadge?.();
     await (await caches.open('konijnenklas-badge')).delete('teller');
   } catch { /* niet ondersteund: niets te wissen */ }
+  if (Date.now() - laatsteMeldingTik < 3000) return;
+  const opKinderen = !location.hash || location.hash === '#kinderen';
+  if (nieuw > 0 && !opKinderen) location.hash = 'kinderen';
+  else if (opKinderen) toonScherm(); // lijst verversen voor nieuwe M- en O-bolletjes
 }
 
 // ---------------------------------------------------------------------------
@@ -411,8 +438,7 @@ function toast(tekst) {
 $('aanmeldForm').addEventListener('submit', aanmelden);
 $('afmelden').addEventListener('click', async () => { await api.afmelden(); location.hash = ''; toonAanmelden(); });
 document.querySelectorAll('.nav .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.scherm; }));
-document.addEventListener('visibilitychange', bolletjeWissen);
-bolletjeWissen();
+document.addEventListener('visibilitychange', bijOpenen);
 window.addEventListener('hashchange', () => { if (!$('app').hidden) { window.scrollTo(0, 0); toonScherm(); } });
 
 themaKnop($('themaKnop'));

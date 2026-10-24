@@ -40,3 +40,5 @@ F. **Openbare repo** `LodeAI/school-website` op gratis GitHub Pages. De gegevens
 - 2026-10-24: bij het wisselen van tabblad met niet verstuurde wijzigingen: pop-up "Ben je zeker? Je hebt nog niet verstuurd naar de leerkracht." (Annuleren of Wisselen). Wie wisselt, verliest niets: de wijzigingen blijven staan tot de ouder terugkomt.
 - 2026-10-24: rood bolletje op het icoon van de leerkrachtapp (iPhone-beginscherm) met het aantal meldingen sinds de app laatst open was. Openen zet het terug op nul.
 - 2026-10-24: alle lijsten van kinderen gesorteerd op achternaam, dan voornaam, maar getoond als "Voornaam Achternaam". "Van Daele" staat dus bij de V.
+- 2026-10-24: in de kinderlijst van de leerkracht een rode bol met M (maaltijden gewijzigd) of een blauwe bol met O (opvang gewijzigd) zolang de leerkracht de fiche van dat kind niet geopend heeft. Bijgehouden in de database (`inzendingen.gezien`), dus gelijk op elk toestel. Op de fiche staat "Nieuw" bij die inzendingen.
+- 2026-10-24: opent de leerkracht de app terwijl er een rood bolletje op het icoon staat, dan gaat ze naar Kinderen. Een tik op een melding gaat voor en opent de fiche van dat kind.
