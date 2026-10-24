@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" href="img/icoon-180.png">
   <link rel="preload" href="fonts/atkinson-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/atkinson-700.woff2" as="font" type="font/woff2" crossorigin>
+  <script>document.documentElement.dataset.thema = /(?:^|; )thema=donker/.test(document.cookie) ? 'donker' : 'licht';</script>
   <link rel="stylesheet" href="css/stijl.css">
   <script src="js/vendor/supabase.js" defer></script>
   <script type="module" src="js/ouder.js"></script>
@@ -23,6 +24,7 @@
         <div class="kop-titel" id="klasTitel">Konijnenklas</div>
         <div class="kop-sub" id="schoolTitel">Maaltijden en opvang</div>
       </div>
+      <div class="kop-rechts"><button class="thema-knop" type="button" id="themaKnop"></button></div>
     </div>
   </header>
 

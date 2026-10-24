@@ -4,6 +4,7 @@ Website waarop ouders van de Konijnenklas (De Triangel) maaltijden en naschoolse
 
 - **Ouders:** `index.html`. Klas en kind kiezen, achternaam typen ter controle, dan twee tabbladen: maaltijden en opvang.
 - **Leerkracht:** `leerkracht/`. Aanmelden met een wachtwoord, kinderen en hun fiche, klasgegevens, vrije dagen en pushmeldingen op de iPhone.
+- **Licht of donker:** knop rechtsboven op beide sites. De keuze staat in de cookie `thema` op het toestel (een jaar geldig, voor beide sites samen). Standaard licht, ook als het toestel zelf donker staat. Het scriptje in de `<head>` zet het thema voor de eerste tekening, zodat er geen witte flits is.
 - **Demo:** zonder Supabase-instellingen in `js/config.js`, of met `?demo` achter het adres, draait alles in de browser met voorbeeldkinderen. Het wachtwoord van de leerkracht is dan `konijn`.
 
 ## Regels

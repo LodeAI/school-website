@@ -32,3 +32,8 @@ F. **Openbare repo** `LodeAI/school-website` op gratis GitHub Pages. De gegevens
 - Een tik op een dag kiest die dag; "Losse dagen" is dus altijd mogelijk.
 - Lettertype Atkinson Hyperlegible (gemaakt voor leesbaarheid), zelf gehost, niet via Google.
 - Leerkracht meldt aan met alleen een wachtwoord. Onder de motorkap is dat een Supabase-gebruiker met een vast e-mailadres dat nergens getoond wordt.
+
+## Na de eerste versie
+
+- 2026-10-24: uitleg onder de achternaamcontrole, waarom ouders de achternaam opnieuw typen.
+- 2026-10-24: lichte en donkere modus met een knop rechtsboven, bewaard in een cookie op het toestel. Standaard licht, los van de instelling van het toestel.

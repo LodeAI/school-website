@@ -2,6 +2,7 @@
 // Schermen via het adres: #kinderen, #kind=<id>, #klas, #vrij, #meldingen.
 
 import { api, DEMO } from './api.js';
+import { themaKnop } from './thema.js';
 import { CONFIG } from './config.js';
 import {
   MAALTIJDDAGEN, dagenVanMaand, el, keuzeBol, korteDatum, langeDatum, maaltijdInhoud, maanIcoon,
@@ -401,4 +402,5 @@ $('afmelden').addEventListener('click', async () => { await api.afmelden(); loca
 document.querySelectorAll('.nav .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.scherm; }));
 window.addEventListener('hashchange', () => { if (!$('app').hidden) { window.scrollTo(0, 0); toonScherm(); } });
 
+themaKnop($('themaKnop'));
 start();

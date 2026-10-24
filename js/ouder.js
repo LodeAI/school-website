@@ -1,6 +1,7 @@
 // Ouderpagina: kind kiezen, achternaam controleren, maaltijden en opvang invullen en versturen.
 
 import { api, DEMO } from './api.js';
+import { themaKnop } from './thema.js';
 import {
   DAGEN, KEUZES, KEUZE, MAALTIJDDAGEN, dagPlus, dagenVanMaand, el, keuzeBol, korteDatum, laatsteDagVoor,
   langeDatum, maaltijdInhoud, maanIcoon, maandKort, maandLabel, maandVan, schooljaarMaanden, tekenKalender,
@@ -551,4 +552,5 @@ window.addEventListener('beforeunload', (e) => {
   if (s.kind && heeftWijzigingen()) e.preventDefault();
 });
 
+themaKnop($('themaKnop'));
 start();
