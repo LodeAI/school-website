@@ -5,7 +5,7 @@ import { themaKnop } from './thema.js';
 import {
   DAGEN, KEUZES, KEUZE, MAALTIJDDAGEN, dagPlus, dagenVanMaand, el, keuzeBol, korteDatum, laatsteDagVoor,
   langeDatum, maaltijdInhoud, maanIcoon, maandKort, maandLabel, maandVan, schooljaarMaanden, tekenKalender,
-  tijdstipLabel, weekdag,
+  tijdstipLabel, vervang, weekdag,
 } from './kalender.js';
 
 const $ = (id) => document.getElementById(id);
@@ -266,7 +266,7 @@ function tekenMaaltijden() {
   const gewijzigd = gewijzigdeMaaltijdMaanden();
   const kalender = el('div');
   p.classList.toggle('vast', !open);
-  p.replaceChildren(
+  vervang(p,
     maandKiezer(m, (maand) => ({
       vast: !maandOpen(maand),
       gewijzigd: gewijzigd.includes(maand),
@@ -405,7 +405,7 @@ function tekenOpvang() {
   const gewijzigd = gewijzigdeOpvangMaanden();
   const kalender = el('div');
   p.classList.toggle('vast', !openDagen.length);
-  p.replaceChildren(
+  vervang(p,
     maandKiezer(m, (maand) => ({
       vast: !dagenVanMaand(maand).some(opvangOpen),
       gewijzigd: gewijzigd.includes(maand),

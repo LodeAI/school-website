@@ -164,6 +164,12 @@ export function tekenKalender(houder, maand, vandaag, dagInfo, opKlik) {
   houder.append(rooster);
 }
 
+// Vervangt de inhoud van een element; lege stukken (null, false) worden overgeslagen,
+// anders zet de browser er letterlijk "null" neer.
+export function vervang(houder, ...kinderen) {
+  houder.replaceChildren(...kinderen.flat().filter((k) => k !== null && k !== undefined && k !== false));
+}
+
 // Kleine helper om elementen op te bouwen: el('button', { className: 'x', onclick }, 'tekst')
 export function el(tag, eigenschappen = {}, ...kinderen) {
   const e = document.createElement(tag);

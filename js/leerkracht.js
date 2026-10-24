@@ -6,7 +6,7 @@ import { themaKnop } from './thema.js';
 import { CONFIG } from './config.js';
 import {
   MAALTIJDDAGEN, dagenVanMaand, el, keuzeBol, korteDatum, langeDatum, maaltijdInhoud, maanIcoon,
-  maandKort, maandLabel, maandVan, schooljaarMaanden, tekenKalender, tijdstipLabel, vandaagBrussel, weekdag,
+  maandKort, maandLabel, maandVan, schooljaarMaanden, tekenKalender, tijdstipLabel, vandaagBrussel, vervang, weekdag,
 } from './kalender.js';
 
 const $ = (id) => document.getElementById(id);
@@ -117,7 +117,7 @@ async function schermKinderen(houder) {
     el('div', {}, el('label', { for: 'nieuwAchternaam' }, 'Achternaam'), achternaam)),
   el('button', { type: 'submit', className: 'knop hoofd breed', style: 'margin-top:14px' }, 'Kind toevoegen'));
 
-  houder.replaceChildren(
+  vervang(houder,
     el('div', { className: 'kaart' }, el('h2', {}, `Kinderen (${kinderen.length})`), el('div', { style: 'margin-top:12px' }, zoek), lijst),
     el('div', { className: 'kaart' }, el('h2', {}, 'Kind toevoegen'), formulier));
 }
@@ -161,7 +161,7 @@ async function schermFiche(houder, kindId) {
   const voornaam = el('input', { type: 'text', id: 'ficheVoornaam', value: kind.voornaam });
   const achternaam = el('input', { type: 'text', id: 'ficheAchternaam', value: kind.achternaam });
 
-  houder.replaceChildren(
+  vervang(houder,
     el('button', { type: 'button', className: 'link terug', onclick: () => { location.hash = 'kinderen'; } }, '‹ Alle kinderen'),
     el('div', { className: 'kaart' },
       el('h1', {}, `${kind.voornaam} ${kind.achternaam}`),
@@ -217,7 +217,7 @@ async function schermKlas(houder) {
   const ouderLink = new URL('../', location.href).href.replace(/[?#].*$/, '');
   const nieuw = el('input', { type: 'password', id: 'nieuwWachtwoord', autocomplete: 'new-password' });
 
-  houder.replaceChildren(
+  vervang(houder,
     el('div', { className: 'kaart' },
       el('h2', {}, 'Klas'),
       el('form', {
@@ -264,7 +264,7 @@ async function schermVrij(houder) {
   const eigen = s.vrijLijst.filter((v) => v.school_id);
   const officieel = s.vrijLijst.filter((v) => !v.school_id);
 
-  houder.replaceChildren(
+  vervang(houder,
     el('div', { className: 'kaart' },
       el('h2', {}, 'Vrije dag toevoegen'),
       el('p', { className: 'uitleg' }, 'Studiedagen en andere dagen zonder school. Ouders kunnen die dag niets invullen.'),
