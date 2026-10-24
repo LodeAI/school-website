@@ -167,6 +167,18 @@ async function anderKind() {
   kindGekozen(true);
 }
 
+// Bij het wisselen van tabblad waarschuwen als het huidige tabblad nog niet verstuurd is.
+// De wijzigingen blijven wel bewaard tot de ouder terugkomt.
+async function wisselTab(tab) {
+  const huidig = $('paneelMaaltijden').hidden ? 'opvang' : 'maaltijden';
+  if (tab === huidig) return;
+  const open = huidig === 'maaltijden' ? gewijzigdeMaaltijdMaanden() : gewijzigdeOpvangMaanden();
+  if (open.length && !(await bevestig('Ben je zeker?', [
+    el('p', {}, 'Je hebt nog niet verstuurd naar de leerkracht.'),
+  ], 'Wisselen'))) return;
+  kiesTab(tab);
+}
+
 function kiesTab(tab) {
   const maaltijden = tab === 'maaltijden';
   $('tabMaaltijden').setAttribute('aria-selected', String(maaltijden));
@@ -546,8 +558,8 @@ $('klas').addEventListener('change', () => klasGekozen());
 $('kind').addEventListener('change', () => kindGekozen());
 $('controle').addEventListener('submit', controleren);
 $('anderKind').addEventListener('click', anderKind);
-$('tabMaaltijden').addEventListener('click', () => kiesTab('maaltijden'));
-$('tabOpvang').addEventListener('click', () => kiesTab('opvang'));
+$('tabMaaltijden').addEventListener('click', () => wisselTab('maaltijden'));
+$('tabOpvang').addEventListener('click', () => wisselTab('opvang'));
 window.addEventListener('beforeunload', (e) => {
   if (s.kind && heeftWijzigingen()) e.preventDefault();
 });
