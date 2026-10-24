@@ -206,7 +206,7 @@ input:focus-visible, select:focus-visible, button:focus-visible {
 .keuze:disabled { opacity: .45; cursor: default; }
 .bol {
   flex: none; position: relative; width: 22px; height: 22px; border-radius: 50%;
-  display: grid; place-items: center; font-size: 11px; font-weight: 700; border: 1.5px solid;
+  display: grid; place-items: center; font-size: 11px; font-weight: 700; line-height: 1; border: 1.5px solid;
 }
 .bol.m-warm { background: var(--warm-zacht); border-color: var(--warm); color: var(--warm-tekst); }
 .bol.m-vegi { background: var(--vegi-zacht); border-color: var(--vegi); color: var(--vegi-tekst); }
@@ -283,7 +283,7 @@ input:focus-visible, select:focus-visible, button:focus-visible {
 .legende {
   display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px; font-size: 14px; color: var(--zacht);
 }
-.legende span { display: inline-flex; align-items: center; gap: 6px; }
+.legende > span { display: inline-flex; align-items: center; gap: 6px; }
 .legende .bol { width: 18px; height: 18px; font-size: 10px; }
 .legende .legende-maan { border: 0; }
 .legende .legende-maan .dag-maan { position: static; width: 18px; height: 18px; }
