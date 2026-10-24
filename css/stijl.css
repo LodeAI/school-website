@@ -397,54 +397,60 @@ dialog ul { margin: 10px 0 0; padding-left: 20px; }
 .verstuur-balk { position: static; }
 .verstuur-balk.plakt { position: sticky; }
 
-@media (max-width: 519px) {
-  .kop-binnen { padding: 8px 16px; gap: 10px; }
-  .logo { width: 32px; height: 32px; }
-  .kop-titel { font-size: 17px; line-height: 1.2; }
-  .kop-sub { font-size: 13px; line-height: 1.2; }
-  .thema-knop { width: 38px; height: 38px; }
-  .inhoud { padding-top: 12px; }
-  .kaart { padding: 16px; }
+/* Compact op elke breedte (vroeger alleen onder 520 px). */
+.kop-binnen { padding: 8px 16px; gap: 10px; }
+.logo { width: 32px; height: 32px; }
+.kop-titel { font-size: 17px; line-height: 1.2; }
+.kop-sub { font-size: 13px; line-height: 1.2; }
+.thema-knop { width: 38px; height: 38px; }
+.inhoud { padding-top: 12px; }
+.kaart { padding: 16px; }
 
-  .tabs { margin-bottom: 10px; padding: 3px; }
-  .tab { min-height: 40px; }
-  .maanden { gap: 5px; padding-bottom: 6px; }
-  .maand { min-width: 46px; min-height: 40px; padding: 2px 6px; gap: 2px; }
-  .maand b { font-size: 14px; }
-  .maand-kop { margin: 6px 0 2px; }
-  .maand-kop h2 { font-size: 17px; }
-  .maand-kop .status { font-size: 13px; margin-top: 0; }
+.tabs { margin-bottom: 10px; padding: 3px; }
+.tab { min-height: 40px; }
+.maanden { gap: 5px; padding-bottom: 4px; }
+.maand { position: relative; min-width: 46px; min-height: 32px; padding: 2px 8px; }
+.maand .maand-stip { position: absolute; bottom: 3px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px; }
+.maand b { font-size: 14px; }
+.maand-kop { margin: 4px 0 0; }
+.maand-kop h2 { font-size: 17px; }
+.maand-kop .status { font-size: 13px; margin-top: 0; }
 
-  .opties { margin: 8px 0 10px; padding: 10px; }
-  .segment { margin-bottom: 8px; padding: 3px; }
-  .segment button { min-height: 34px; font-size: 14px; }
-  .opties-uitleg { font-size: 13px; margin-bottom: 8px; }
-  .keuzes { gap: 6px; }
-  .keuze { min-height: 40px; padding: 4px 8px; font-size: 14px; border-radius: 10px; }
-  .vaste-dagen { gap: 6px; margin-bottom: 8px; }
-  .vaste-dag { grid-template-columns: 84px 1fr; }
-  .vaste-dag select { min-height: 38px; padding: 6px 36px 6px 10px; }
-  .vaste-dagen + .knop, .opties .knop.hoofd.breed { min-height: 42px; }
-  .opties-rij { margin-top: 6px; gap: 6px; }
-  .knop.klein-knop { min-height: 36px; }
-  .weken { gap: 6px; }
-  .week { min-height: 40px; }
-  .vinkje { min-height: 38px; padding: 6px 10px; }
-  .opties .knop { min-height: 42px; }
+.opties { margin: 6px 0 10px; padding: 10px; }
+.segment { margin-bottom: 8px; padding: 3px; }
+.segment button { min-height: 34px; font-size: 14px; }
+.opties-uitleg { font-size: 13px; margin-bottom: 8px; }
+.keuzes { gap: 6px; }
+.keuze { min-height: 40px; padding: 4px 8px; font-size: 14px; border-radius: 10px; }
+.vaste-dagen { gap: 6px; margin-bottom: 8px; }
+.vaste-dag { margin: 0; }
+.vaste-dag { grid-template-columns: 96px 1fr; }
+.vaste-dag select { font-weight: 400; }
+.vaste-dag select { min-height: 38px; padding: 6px 36px 6px 10px; }
+.vaste-dagen + .knop, .opties .knop.hoofd.breed { min-height: 42px; }
+.opties-rij { margin-top: 6px; gap: 6px; }
+.knop.klein-knop { min-height: 36px; }
+.weken { gap: 6px; }
+.week { min-height: 40px; }
+.vinkje { min-height: 38px; padding: 6px 10px; }
+.opties .knop { min-height: 42px; }
 
-  .kalender { gap: 2px; }
-  .kalender-kop { font-size: 12px; padding-bottom: 2px; }
-  .dag { min-height: 52px; gap: 2px; padding-top: 3px; }
-  .dag-cirkel { width: 36px; height: 36px; font-size: 15px; }
-  .dag-label { font-size: 10px; line-height: 12px; min-height: 12px; }
-  .dag-maan { width: 16px; height: 16px; top: -5px; left: -5px; }
-  .dag-maan svg { width: 11px; height: 11px; }
+.kalender { gap: 2px; }
+.kalender-kop { font-size: 12px; padding-bottom: 2px; }
+.dag { min-height: 52px; gap: 2px; padding-top: 3px; }
+.dag-cirkel { width: 36px; height: 36px; font-size: 15px; }
+.dag-label { font-size: 10px; line-height: 12px; min-height: 12px; }
+.dag-maan { width: 16px; height: 16px; top: -5px; left: -5px; }
+.dag-maan svg { width: 11px; height: 11px; }
 
-  .legende { margin-top: 10px; gap: 6px 12px; font-size: 13px; }
-  .vrije-lijst { margin-top: 8px; font-size: 13px; }
-  .verstuur-balk { margin-top: 12px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); }
-  .verstuur-status { font-size: 13px; margin-bottom: 6px; }
-  .verstuur-balk .knop { min-height: 46px; }
+.legende { margin-top: 10px; gap: 6px 12px; font-size: 13px; }
+.vrije-lijst { margin-top: 8px; font-size: 13px; }
+.verstuur-balk { margin-top: 12px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); }
+.verstuur-status { font-size: 13px; margin-bottom: 6px; }
+.verstuur-balk .knop { min-height: 46px; }
+@media (min-width: 520px) {
+  .dag-cirkel { width: 42px; height: 42px; font-size: 16px; }
+  .dag { min-height: 58px; }
 }
 
 /* Rooster met maaltijdkeuzes */
