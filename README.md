@@ -16,7 +16,7 @@ Website waarop ouders van de Konijnenklas (De Triangel) maaltijden en naschoolse
 | Aanpassen tot | de laatste dag van de vorige maand | de dag voordien, 23:59 |
 | Versturen | vergrendelt niets; opnieuw versturen mag tot de deadline | idem |
 
-De database controleert dezelfde regels nog eens (`supabase/migrations`), los van wat de pagina doet. Elke verzending met echte wijzigingen komt in `inzendingen` en stuurt via de Edge Function `melding` een pushmelding naar de leerkracht. Een tik op de melding opent `leerkracht/#kind=<id>`.
+De database controleert dezelfde regels nog eens (`supabase/migrations`), los van wat de pagina doet. Elke verzending met echte wijzigingen komt in `inzendingen` en stuurt via de Edge Function `melding` een pushmelding naar de leerkracht. Een tik op de melding opent `leerkracht/#kind=<id>`. De service worker telt de meldingen op het icoon (rood bolletje, iOS 16.4 of nieuwer); de pagina wist de teller bij het openen.
 
 ## Opbouw
 

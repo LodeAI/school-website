@@ -372,6 +372,15 @@ function base64NaarBytes(tekst) {
   return Uint8Array.from(atob(opgevuld), (c) => c.charCodeAt(0));
 }
 
+// Rood bolletje op het icoon wissen zodra de app open is (de service worker telt op).
+async function bolletjeWissen() {
+  if (document.visibilityState !== 'visible') return;
+  try {
+    await navigator.clearAppBadge?.();
+    await (await caches.open('konijnenklas-badge')).delete('teller');
+  } catch { /* niet ondersteund: niets te wissen */ }
+}
+
 // ---------------------------------------------------------------------------
 // Dialoog en toast
 // ---------------------------------------------------------------------------
@@ -400,6 +409,8 @@ function toast(tekst) {
 $('aanmeldForm').addEventListener('submit', aanmelden);
 $('afmelden').addEventListener('click', async () => { await api.afmelden(); location.hash = ''; toonAanmelden(); });
 document.querySelectorAll('.nav .tab').forEach((t) => t.addEventListener('click', () => { location.hash = t.dataset.scherm; }));
+document.addEventListener('visibilitychange', bolletjeWissen);
+bolletjeWissen();
 window.addEventListener('hashchange', () => { if (!$('app').hidden) { window.scrollTo(0, 0); toonScherm(); } });
 
 themaKnop($('themaKnop'));
