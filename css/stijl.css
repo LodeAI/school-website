@@ -465,3 +465,4 @@ dialog ul { margin: 10px 0 0; padding-left: 20px; }
 .uitleg-rij .opties-uitleg { margin: 0; flex: 1; }
 .klein-link { font-size: 14px; padding: 2px 0; flex: none; }
 .link:disabled { opacity: .4; cursor: default; }
+.selectie-rij { margin-top: -4px; gap: 16px; }

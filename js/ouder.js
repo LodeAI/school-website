@@ -335,11 +335,17 @@ function maaltijdOpties(m) {
   const naam = maandLabel(m).split(' ')[0];
   const inhoud = [segment([['maand', 'Hele maand'], ['vast', 'Vaste dagen'], ['los', 'Losse dagen']], s.m.modus,
     (modus) => { s.m.modus = modus; if (modus !== 'los') s.m.selectie.clear(); tekenMaaltijden(); })];
+  // Leegmaken staat bij elke manier van invullen en maakt de hele maand leeg.
+  const leegmaken = () => linkKnop('Leegmaken', () => {
+    vulMaaltijden(dagen, null);
+    s.m.selectie.clear();
+    tekenMaaltijden();
+    toast(`${hoofdletter(naam)} leeggemaakt`);
+  });
 
   if (s.m.modus === 'maand') {
     inhoud.push(
-      uitlegRij(`Eén tik vult alle ${dagen.length} dagen van ${naam} in.`,
-        linkKnop('Leegmaken', () => { vulMaaltijden(dagen, null); tekenMaaltijden(); })),
+      uitlegRij(`Eén tik vult alle ${dagen.length} dagen van ${naam} in.`, leegmaken()),
       keuzeKnoppen((code) => {
         vulMaaltijden(dagen, code);
         tekenMaaltijden();
@@ -347,19 +353,18 @@ function maaltijdOpties(m) {
       }));
   } else if (s.m.modus === 'vast') {
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, 'Kies per weekdag, voor heel de maand.'),
+      uitlegRij('Kies per weekdag, voor heel de maand.', leegmaken()),
       el('div', { className: 'vaste-dagen' }, MAALTIJDDAGEN.map((wd) => el('label', { className: 'vaste-dag' },
         el('span', {}, hoofdletter(DAGEN[wd - 1])),
         el('select', { onchange: (e) => { s.m.vast[wd] = e.target.value; } },
           el('option', { value: '', selected: !s.m.vast[wd] }, 'Niet wijzigen'),
-          KEUZES.map((k) => el('option', { value: k.code, selected: s.m.vast[wd] === k.code }, k.label)),
-          el('option', { value: 'leeg', selected: s.m.vast[wd] === 'leeg' }, 'Leegmaken'))))),
+          KEUZES.map((k) => el('option', { value: k.code, selected: s.m.vast[wd] === k.code }, k.label)))))),
       el('button', {
         type: 'button', className: 'knop hoofd breed', onclick: () => {
           const gekozen = Object.entries(s.m.vast).filter(([, code]) => code);
           if (!gekozen.length) return toast('Kies eerst bij minstens één weekdag een maaltijd.');
           for (const [wd, code] of gekozen) {
-            vulMaaltijden(dagen.filter((d) => weekdag(d) === Number(wd)), code === 'leeg' ? null : code);
+            vulMaaltijden(dagen.filter((d) => weekdag(d) === Number(wd)), code);
           }
           tekenMaaltijden();
           toast(`Toegepast op ${naam}`);
@@ -370,9 +375,10 @@ function maaltijdOpties(m) {
     inhoud.push(
       uitlegRij(n
         ? `${meervoud(n, 'dag', 'dagen')} gekozen, kies de maaltijd.`
-        : 'Tik dagen aan in de kalender, kies dan de maaltijd.',
-      n ? linkKnop('Leegmaken', () => { vulMaaltijden(s.m.selectie, null); s.m.selectie.clear(); tekenMaaltijden(); }) : null,
-      n ? linkKnop('Wissen', () => { s.m.selectie.clear(); tekenMaaltijden(); }) : null),
+        : 'Tik dagen aan in de kalender, kies dan de maaltijd.', leegmaken()),
+      n ? el('div', { className: 'uitleg-rij selectie-rij' },
+        linkKnop('Gekozen dagen leegmaken', () => { vulMaaltijden(s.m.selectie, null); s.m.selectie.clear(); tekenMaaltijden(); }),
+        linkKnop('Selectie wissen', () => { s.m.selectie.clear(); tekenMaaltijden(); })) : null,
       keuzeKnoppen((code) => {
         vulMaaltijden(s.m.selectie, code);
         s.m.selectie.clear();
