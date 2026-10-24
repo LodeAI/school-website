@@ -249,7 +249,7 @@ begin
 
   for v_rij in select key::date as datum, value #>> '{}' as keuze from jsonb_each(p_keuzes) loop
     if not (date_trunc('month', v_rij.datum)::date = any (p_maanden)) then
-      raise exception '% hoort niet bij de verstuurde maanden.', v_rij.datum;
+      raise exception '% hoort niet bij de verstuurde maanden.', privaat.korte_dag(v_rij.datum);
     end if;
     if extract(isodow from v_rij.datum) not in (1, 2, 4, 5) or privaat.is_vrije_dag(v_school, v_rij.datum) then
       raise exception 'Op % kan je geen maaltijd kiezen.', privaat.korte_dag(v_rij.datum);
