@@ -262,7 +262,7 @@ function tekenMaaltijden() {
     }), (maand) => { s.m.maand = maand; s.m.selectie.clear(); tekenMaaltijden(); }),
     maandKop(m, open
       ? `Aanpassen kan tot en met ${langeDatum(laatsteDagVoor(m))}.`
-      : 'Deze maand is begonnen en ligt vast.', !open),
+      : m < maandVan(s.vandaag) ? 'Deze maand is voorbij.' : 'Deze maand is begonnen en ligt vast.', !open),
     open ? maaltijdOpties(m) : null,
     kalender,
     el('div', { className: 'legende' },
@@ -401,7 +401,7 @@ function tekenOpvang() {
     }), (maand) => { s.o.maand = maand; tekenOpvang(); }),
     maandKop(m, openDagen.length
       ? 'Je kan elke dag aanpassen tot en met de dag voordien.'
-      : 'Deze maand is voorbij.', !openDagen.length),
+      : m < maandVan(s.vandaag) ? 'Deze maand is voorbij.' : 'Deze maand kan je niet meer aanpassen.', !openDagen.length),
     openDagen.length ? opvangOpties(m, openDagen) : null,
     kalender,
     el('div', { className: 'legende' },
