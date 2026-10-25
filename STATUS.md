@@ -12,11 +12,11 @@
   - Een tekst wijzigen of verbeteren: alleen in `js/teksten.js`. Een nieuwe taal: een object in `js/teksten.js`, de code in `TALEN` (`js/taal.js`) en in het scriptje in de `<head>` van `index.html` (regex en `lang`-tabel).
   - Getest in headless Chrome op 390 px, demomodus, alle zeven talen: geen consolefouten, geen horizontale scroll, de labels onder de dagen passen, taal blijft na herladen. De Nederlandse teksten (ook `aria-label` en `title`) zijn letter voor letter gelijk aan de versie van voor de taalknop, op beide sites.
 
-**Open:**
+**Open:** niets.
 
-1. Vertalingen laten nalezen door iemand die de taal spreekt, vooral Koreaans, Italiaans en Duits (door Claude vertaald).
-2. Op de iPhone: leerkrachtensite op het beginscherm zetten, meldingen aanzetten, testmelding.
-3. De echte kinderen invullen (leerkracht) en eventueel het leerjaar.
+- Vertalingen nalezen: niet nodig, volgens Lode.
+- Leerkrachtensite op het beginscherm van de iPhone, meldingen aan en testmelding: gedaan (Lode).
+- Echte kinderen ingevuld: gedaan (Lode).
 
 ## 2026-10-24
 
@@ -34,8 +34,4 @@
 - Leerkrachtgebruiker `leerkracht@konijnenklas.lvit.be`; wachtwoord in de sleutelhanger (dienst `konijnenklas-leerkracht`). VAPID-privésleutel ook in de sleutelhanger (`konijnenklas-vapid-privaat`).
 - Volledige doorloop lokaal tegen de echte database: ouder vult in en verstuurt, leerkracht ziet de inzendingen op de fiche, sessie blijft na herladen. Testkind daarna gewist.
 
-**Open (stand 2026-10-24, punt 1 intussen gedaan; zie 2026-10-25 hierboven):**
-
-1. ~~Lege openbare repo `LodeAI/school-website` (Lode), daarna pushen en GitHub Pages aanzetten.~~ Gedaan.
-2. Op de iPhone: leerkrachtensite op het beginscherm zetten, meldingen aanzetten, testmelding.
-3. De echte kinderen invullen (leerkracht) en eventueel het leerjaar.
+**Open op 2026-10-24:** alle drie intussen gedaan (repo en GitHub Pages, iPhone-meldingen, echte kinderen); zie 2026-10-25 hierboven.
