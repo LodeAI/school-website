@@ -399,7 +399,10 @@ async function aantalOpIcoon() {
 async function bijOpenen() {
   if (document.visibilityState !== 'visible' || $('app').hidden) return;
   await new Promise((klaar) => setTimeout(klaar, 400)); // een bericht van een melding-tik eerst laten binnenkomen
-  const nieuw = await aantalOpIcoon();
+  // Wat de service worker telde, of wat de database sinds de vorige keer kreeg: op iOS met
+  // declarative web push zet iOS het bolletje zelf en telt de service worker niet mee.
+  const [opIcoon, opServer] = await Promise.all([aantalOpIcoon(), api.appGeopend().catch(() => 0)]);
+  const nieuw = Math.max(opIcoon, opServer);
   try {
     await navigator.clearAppBadge?.();
     await (await caches.open('konijnenklas-badge')).delete('teller');

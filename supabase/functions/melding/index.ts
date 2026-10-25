@@ -55,13 +55,35 @@ Deno.serve(async (req) => {
     return antwoord({ fout: "geen toegang" }, 401);
   }
 
+  // Rood bolletje op het icoon: het aantal inzendingen sinds de leerkracht de app laatst opende.
+  const { data: geopend } = await supabase.from("leerkracht_geopend").select("tijdstip").eq("id", 1).maybeSingle();
+  const { count } = await supabase.from("inzendingen").select("id", { count: "exact", head: true })
+    .gt("tijdstip", geopend?.tijdstip ?? "1970-01-01");
+  const bolletje = Math.max(1, count ?? 0);
+
+  // Declarative web push (iOS 18.4 en nieuwer): iOS toont de melding en zet het bolletje zelf, zonder
+  // service worker. app_badge staat op het hoogste niveau (huidige WebKit) en in notification (iOS 18).
+  // Andere browsers geven dit aan de service worker, die hetzelfde formaat leest.
+  const melding = {
+    web_push: 8030,
+    notification: {
+      title: bericht.title,
+      body: bericht.body,
+      navigate: bericht.url,
+      lang: "nl-BE",
+      tag: bericht.tag,
+      app_badge: bolletje,
+    },
+    app_badge: bolletje,
+  };
+
   const { data: abonnementen } = await supabase.from("push_abonnementen").select("endpoint, p256dh, auth");
   let verstuurd = 0;
   await Promise.all((abonnementen ?? []).map(async (a) => {
     try {
       await webpush.sendNotification(
         { endpoint: a.endpoint, keys: { p256dh: a.p256dh, auth: a.auth } },
-        JSON.stringify(bericht),
+        JSON.stringify(melding),
         { TTL: 60 * 60 * 24 },
       );
       verstuurd++;
@@ -76,5 +98,5 @@ Deno.serve(async (req) => {
     }
   }));
 
-  return antwoord({ verstuurd });
+  return antwoord({ verstuurd, bolletje });
 });

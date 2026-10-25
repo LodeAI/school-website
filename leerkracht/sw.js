@@ -4,10 +4,10 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
 // Rood bolletje op het icoon: het aantal meldingen sinds de leerkracht de app laatst opende.
-// De teller staat in Cache Storage, zodat hij een herstart van de service worker overleeft.
-// Het bolletje wordt altijd gezet, ook als de teller niet lukt; nooit minder dan het aantal
-// meldingen dat nog in het meldingencentrum staat. De pagina wist het bij het openen.
-async function bolletjeZetten() {
+// De server stuurt dat getal mee (app_badge); daarnaast telt de service worker zelf in Cache Storage,
+// zodat er altijd minstens een bolletje staat. Nooit minder dan het aantal meldingen dat nog in het
+// meldingencentrum staat. De pagina wist het bij het openen.
+async function bolletjeZetten(vanServer = 0) {
   let n = 1;
   try {
     const cache = await caches.open('konijnenklas-badge');
@@ -15,22 +15,29 @@ async function bolletjeZetten() {
     n = (oud ? Number(await oud.text()) || 0 : 0) + 1;
     await cache.put('teller', new Response(String(n)));
   } catch { /* geen opslag: dan minstens 1 */ }
+  n = Math.max(n, vanServer);
   try {
     n = Math.max(n, (await self.registration.getNotifications()).length);
   } catch { /* niet ondersteund */ }
   if ('setAppBadge' in self.navigator) await self.navigator.setAppBadge(n);
 }
 
+// De melding komt in het formaat van declarative web push ({ web_push: 8030, notification, app_badge }).
+// Op een iPhone met iOS 18.4 of nieuwer toont iOS ze zelf en komt dit niet aan bod; elders wel.
+// Het oude formaat ({ title, body, url }) blijft werken.
 self.addEventListener('push', (e) => {
   let bericht = {};
   try { bericht = e.data ? e.data.json() : {}; } catch { bericht = { body: e.data?.text() }; }
+  const n = bericht.notification ?? {};
+  const getal = Number(bericht.app_badge ?? n.app_badge) || 0;
   e.waitUntil((async () => {
-    await self.registration.showNotification(bericht.title || 'Konijnenklas', {
-      body: bericht.body || '',
+    await self.registration.showNotification(n.title || bericht.title || 'Konijnenklas', {
+      body: n.body || bericht.body || '',
       icon: '../img/icoon-192.png',
-      data: { url: bericht.url || './' },
+      tag: n.tag,
+      data: { url: n.navigate || bericht.url || './' },
     });
-    await bolletjeZetten().catch(() => {});
+    await bolletjeZetten(getal).catch(() => {});
   })());
 });
 

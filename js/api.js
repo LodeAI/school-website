@@ -54,7 +54,7 @@ const supabaseApi = {
     const { error } = await sb().auth.signInWithPassword({ email: CONFIG.leerkrachtEmail, password: wachtwoord });
     if (error) throw new Error('Dit wachtwoord klopt niet.');
   },
-  afmelden: () => sb().auth.signOut(),
+  afmelden: () => sb().auth.signOut({ scope: 'local' }), // alleen dit toestel; andere blijven aangemeld
   async wachtwoordWijzigen(wachtwoord) {
     const { error } = await sb().auth.updateUser({ password: wachtwoord });
     if (error) throw new Error(error.message);
@@ -115,6 +115,16 @@ const supabaseApi = {
     return q(sb().from('push_abonnementen').upsert({
       endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, toestel,
     }));
+  },
+  // De app is geopend: geeft het aantal inzendingen sinds de vorige keer en zet het tijdstip op nu.
+  // De pushmelding telt vanaf dit tijdstip voor het rode bolletje op het icoon.
+  async appGeopend() {
+    const rij = await q(sb().from('leerkracht_geopend').select('tijdstip').eq('id', 1).maybeSingle());
+    const { count, error } = await sb().from('inzendingen').select('id', { count: 'exact', head: true })
+      .gt('tijdstip', rij?.tijdstip ?? '1970-01-01');
+    if (error) throw new Error(error.message);
+    await q(sb().from('leerkracht_geopend').upsert({ id: 1, tijdstip: new Date().toISOString() }));
+    return count ?? 0;
   },
   async testMelding() {
     const { data, error } = await sb().functions.invoke('melding', { body: { test: true } });
@@ -308,6 +318,7 @@ const demoApi = {
   },
   pushBewaren: () => wacht(null),
   testMelding: () => wacht(0),
+  appGeopend: () => wacht(0),
 };
 
 export const api = DEMO ? demoApi : supabaseApi;

@@ -1,5 +1,13 @@
 # Status
 
+## 2026-10-25, namiddag
+
+Lode: geen rood bolletje op het icoon bij een nieuwe inzending, en telkens opnieuw moeten inloggen als leerkracht.
+
+- **Bolletje:** de melding van 10.54 uur ging wel naar Apple (status 200, twee iPhone-abonnementen), maar het bolletje hing helemaal af van de service worker. Nu declarative web push met `app_badge` (zie BESLISSINGEN.md), nieuwe tabel `leerkracht_geopend` (migratie `20261025160000_leerkracht_geopend.sql`, uitgerold via de beheer-API), Edge Function `melding` opnieuw uitgerold. **Te testen door Lode op de iPhone:** een inzending als ouder, dan het beginscherm bekijken.
+- **Uitloggen:** in de database stond alleen nog de sessie van vandaag 16.07 uur; de oudere waren weg. Waarschijnlijke oorzaak: refresh token rotation. iOS bevriest de web-app midden in het vernieuwen van de sessie, de app houdt het oude token, en Supabase ziet het hergebruik later als misbruik en schrapt de sessie. **Open, beslissing van Lode:** rotation uitzetten in Supabase (Authentication, Sessions, "Detect and revoke potentially compromised refresh tokens" uit) of het hergebruikvenster verruimen. Claude mocht die beveiligingsinstelling niet zelf wijzigen.
+- Afmelden geldt nu alleen voor dat toestel.
+
 ## 2026-10-25
 
 **Live** op https://konijnenklas.lvit.be/ (ouders) en https://konijnenklas.lvit.be/leerkracht/ (leerkracht), GitHub Pages vanaf `main` van `LodeAI/school-website`.
