@@ -1,8 +1,5 @@
 // Service worker van de leerkrachtensite: toont pushmeldingen en opent bij een tik de fiche van het kind.
 
-// Verhoog samen met VERSIE in js/leerkracht.js; onderaan de leerkrachtenpagina staan ze allebei.
-const VERSIE = '1.2';
-
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
@@ -40,11 +37,6 @@ self.addEventListener('push', (e) => {
     });
     await bolletjeZetten(getal).catch(() => {});
   })());
-});
-
-// De pagina vraagt de versie op voor de voettekst.
-self.addEventListener('message', (e) => {
-  if (e.data?.vraag === 'versie') e.source?.postMessage({ versie: VERSIE });
 });
 
 self.addEventListener('notificationclick', (e) => {
