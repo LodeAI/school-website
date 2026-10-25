@@ -100,12 +100,24 @@ button, input, select { font: inherit; color: inherit; }
 .logo { width: 40px; height: 40px; color: var(--accent); flex: none; }
 .kop-titel { font-weight: 700; font-size: 18px; }
 .kop-sub { color: var(--zacht); font-size: 14px; }
-.kop-rechts { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+.kop-rechts { margin-left: auto; display: flex; align-items: center; gap: 10px; }
 .thema-knop {
   width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--lijn); background: var(--kaart);
   color: var(--zacht); display: grid; place-items: center; cursor: pointer; padding: 0; flex: none;
 }
 .thema-knop svg { width: 20px; height: 20px; }
+/* Taalknop: toont de code, de onzichtbare keuzelijst erboven opent de lijst van het toestel. */
+.taal-knop {
+  position: relative; width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--lijn); background: var(--kaart);
+  color: var(--zacht); display: grid; place-items: center; flex: none; margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .02em;
+}
+.taal-knop select {
+  position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; opacity: 0; cursor: pointer; font-size: 16px;
+  appearance: none; border: 0; padding: 0; margin: 0;
+}
+.taal-knop:has(select:focus-visible) { outline: 2px solid var(--accent-donker); outline-offset: 2px; }
+/* Tot ouder.js de vaste teksten vertaald heeft: geen Nederlandse flits in een andere taal. */
+.vertalen [data-t] { visibility: hidden; }
 
 .inhoud { max-width: 640px; margin: 0 auto; padding: 20px 16px 8px; }
 .kaart {
@@ -402,7 +414,8 @@ dialog ul { margin: 10px 0 0; padding-left: 20px; }
 .logo { width: 32px; height: 32px; }
 .kop-titel { font-size: 17px; line-height: 1.2; }
 .kop-sub { font-size: 13px; line-height: 1.2; }
-.thema-knop { width: 38px; height: 38px; }
+.thema-knop, .taal-knop { width: 38px; height: 38px; }
+.kop-rechts { gap: 8px; }
 .inhoud { padding-top: 12px; }
 .kaart { padding: 16px; }
 

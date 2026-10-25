@@ -1,22 +1,15 @@
 // Datums, maanden en de kalenderweergave, gedeeld door de ouder- en de leerkrachtensite.
 // Datums zijn overal tekst in de vorm "2026-11-02"; maanden "2026-11".
 
-export const MAANDEN = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli',
-  'augustus', 'september', 'oktober', 'november', 'december'];
-export const MAANDEN_KORT = ['jan', 'feb', 'mrt', 'apr', 'mei', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-export const DAGEN = ['maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag', 'zaterdag', 'zondag'];
-export const DAGEN_KORT = ['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'];
+import { t } from './taal.js';
 
-export const KEUZES = [
-  { code: 'dommelen_warm', label: 'Dommelen + warm', soort: 'warm', dommelen: true },
-  { code: 'dommelen_vegi', label: 'Dommelen + vegi', soort: 'vegi', dommelen: true },
-  { code: 'dommelen_boterhammen', label: 'Dommelen + boterhammen', soort: 'boterhammen', dommelen: true },
-  { code: 'warm', label: 'Warm', soort: 'warm', dommelen: false },
-  { code: 'vegi', label: 'Vegi', soort: 'vegi', dommelen: false },
-  { code: 'boterhammen', label: 'Boterhammen', soort: 'boterhammen', dommelen: false },
-];
+// Namen en datumvormen komen uit de taal van de pagina (js/taal.js); de leerkrachtensite is altijd Nederlands.
+const SOORTEN = ['warm', 'vegi', 'boterhammen'];
+export const KEUZES = [true, false].flatMap((dommelen) => SOORTEN.map((soort) => ({
+  code: (dommelen ? 'dommelen_' : '') + soort, soort, dommelen,
+  get label() { return dommelen ? t('metDommelenLabel', t('soort')[soort]) : t('soort')[soort]; },
+})));
 export const KEUZE = Object.fromEntries(KEUZES.map((k) => [k.code, k]));
-const LETTER = { warm: 'W', vegi: 'V', boterhammen: 'B' };
 
 // Weekdagen (1 = maandag) waarop gegeten wordt; woensdag niet.
 export const MAALTIJDDAGEN = [1, 2, 4, 5];
@@ -60,21 +53,37 @@ export function schooljaarMaanden(vandaag) {
 
 export function maandLabel(maand) {
   const [j, m] = maand.split('-').map(Number);
-  return `${MAANDEN[m - 1]} ${j}`;
+  return t('maandLabel', t('maanden')[m - 1], m, j);
+}
+
+// Alleen de naam van de maand, zonder jaar: "november".
+export function maandNaam(maand) {
+  return t('maandNaam', t('maanden')[Number(maand.slice(5, 7)) - 1]);
 }
 
 export function maandKort(maand) {
-  return MAANDEN_KORT[Number(maand.slice(5, 7)) - 1];
+  return t('maandenKort')[Number(maand.slice(5, 7)) - 1];
+}
+
+// Weekdag voluit, 1 = maandag.
+export function dagNaam(wd) {
+  return t('dagen')[wd - 1];
 }
 
 export function korteDatum(iso) {
   const [, m, d] = iso.split('-').map(Number);
-  return `${DAGEN_KORT[weekdag(iso) - 1]} ${d} ${MAANDEN_KORT[m - 1]}`;
+  return t('korteDatum', t('dagenKort')[weekdag(iso) - 1], d, t('maandenKort')[m - 1]);
+}
+
+// Dag en maand zonder weekdag: "6 nov".
+export function dagMaand(iso) {
+  const [, m, d] = iso.split('-').map(Number);
+  return t('dagMaand', d, t('maandenKort')[m - 1]);
 }
 
 export function langeDatum(iso) {
   const [j, m, d] = iso.split('-').map(Number);
-  return `${DAGEN[weekdag(iso) - 1]} ${d} ${MAANDEN[m - 1]} ${j}`;
+  return t('langeDatum', dagNaam(weekdag(iso)), d, t('maanden')[m - 1], m, j);
 }
 
 export function laatsteDagVoor(maand) {
@@ -82,7 +91,7 @@ export function laatsteDagVoor(maand) {
 }
 
 export function tijdstipLabel(tijdstip) {
-  return new Intl.DateTimeFormat('nl-BE', {
+  return new Intl.DateTimeFormat(t('locale'), {
     timeZone: 'Europe/Brussels', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
   }).format(new Date(tijdstip));
 }
@@ -91,7 +100,7 @@ export function tijdstipLabel(tijdstip) {
 export function maaltijdInhoud(code) {
   const k = KEUZE[code];
   if (!k) return null;
-  return { klasse: `m-${k.soort}`, letter: LETTER[k.soort], dommelen: k.dommelen, label: k.label };
+  return { klasse: `m-${k.soort}`, letter: t('letter')[k.soort], dommelen: k.dommelen, label: k.label };
 }
 
 // Maantje voor "dommelen".
@@ -119,7 +128,7 @@ export function tekenKalender(houder, maand, vandaag, dagInfo, opKlik) {
   rooster.className = 'kalender';
   rooster.setAttribute('role', 'grid');
 
-  DAGEN_KORT.forEach((d, i) => {
+  t('dagenKop').forEach((d, i) => {
     const kop = document.createElement('div');
     kop.className = 'kalender-kop' + (i >= 5 ? ' weekend' : '');
     kop.textContent = d;
@@ -150,7 +159,7 @@ export function tekenKalender(houder, maand, vandaag, dagInfo, opKlik) {
     if (info.dommelen) cirkel.append(maanIcoon());
     const onder = document.createElement('span');
     onder.className = 'dag-label';
-    onder.textContent = info.letter || (iso === vandaag ? 'vandaag' : '');
+    onder.textContent = info.letter || (iso === vandaag ? t('vandaag') : '');
     knop.append(cirkel, onder);
 
     const delen = [langeDatum(iso)];

@@ -2,16 +2,16 @@
 
 import { api, DEMO } from './api.js';
 import { themaKnop } from './thema.js';
+import { t, taal, taalKnop, vertaalPagina, vrijeDagNaam } from './taal.js';
 import {
-  DAGEN, KEUZES, KEUZE, MAALTIJDDAGEN, dagPlus, dagenVanMaand, el, keuzeBol, korteDatum, laatsteDagVoor,
-  langeDatum, maaltijdInhoud, maanIcoon, maandKort, maandLabel, maandVan, schooljaarMaanden, tekenKalender,
+  KEUZES, KEUZE, MAALTIJDDAGEN, dagMaand, dagNaam, dagPlus, dagenVanMaand, el, keuzeBol, korteDatum, laatsteDagVoor,
+  langeDatum, maaltijdInhoud, maanIcoon, maandKort, maandLabel, maandNaam, maandVan, schooljaarMaanden, tekenKalender,
   tijdstipLabel, vervang, weekdag,
 } from './kalender.js';
 
 const $ = (id) => document.getElementById(id);
 const ONTHOUD = 'konijnenklas-ouder';
 const hoofdletter = (t) => t.charAt(0).toUpperCase() + t.slice(1);
-const meervoud = (n, een, veel) => `${n} ${n === 1 ? een : veel}`;
 
 const s = {
   klassen: [],
@@ -59,11 +59,11 @@ async function start() {
   try {
     s.klassen = await api.klassen();
   } catch {
-    $('klas').replaceChildren(el('option', { value: '' }, 'Laden mislukt'));
-    return toast('De gegevens konden niet geladen worden. Probeer het later opnieuw.');
+    $('klas').replaceChildren(el('option', { value: '' }, t('ladenMislukt')));
+    return toast(t('ladenFout'));
   }
   $('klas').replaceChildren(
-    el('option', { value: '' }, 'Kies je klas'),
+    el('option', { value: '' }, t('kiesKlas')),
     ...s.klassen.map((k) => el('option', { value: k.id }, k.leerjaar ? `${k.naam} (${k.leerjaar})` : k.naam)));
   const klas = s.klassen.find((k) => k.id === eerder.klas) ?? (s.klassen.length === 1 ? s.klassen[0] : null);
   if (klas) {
@@ -78,20 +78,21 @@ async function klasGekozen(kindVoorkeur) {
   $('controle').hidden = true;
   kindKeuze.disabled = true;
   if (!klas) {
-    kindKeuze.replaceChildren(el('option', { value: '' }, 'Kies eerst de klas'));
+    kindKeuze.replaceChildren(el('option', { value: '' }, t('eerstKlas')));
     return;
   }
   $('klasTitel').textContent = klas.naam;
   $('schoolTitel').textContent = klas.school;
-  kindKeuze.replaceChildren(el('option', { value: '' }, 'Even geduld…'));
+  delete $('schoolTitel').dataset.t; // de schoolnaam wordt niet vertaald
+  kindKeuze.replaceChildren(el('option', { value: '' }, t('laden')));
   try {
     s.kinderen = await api.kinderen(klas.id);
   } catch {
-    kindKeuze.replaceChildren(el('option', { value: '' }, 'Laden mislukt'));
+    kindKeuze.replaceChildren(el('option', { value: '' }, t('ladenMislukt')));
     return;
   }
   kindKeuze.replaceChildren(
-    el('option', { value: '' }, 'Kies je kind'),
+    el('option', { value: '' }, t('kiesKind')),
     ...s.kinderen.map((k) => el('option', { value: k.id }, `${k.voornaam} ${k.achternaam}`)));
   kindKeuze.disabled = false;
   if (s.kinderen.some((k) => k.id === kindVoorkeur)) {
@@ -114,7 +115,7 @@ async function controleren(e) {
   const achternaam = $('achternaam').value;
   if (!kind) return;
   if (!achternaam.trim()) {
-    $('startFout').textContent = 'Typ de achternaam van je kind.';
+    $('startFout').textContent = t('typAchternaam');
     return;
   }
   $('verder').disabled = true;
@@ -133,8 +134,8 @@ async function controleren(e) {
     window.scrollTo(0, 0);
   } catch (fout) {
     $('startFout').textContent = fout.message.includes('achternaam')
-      ? 'De achternaam klopt niet. Kijk de spelling na.'
-      : 'Er ging iets mis. Probeer het opnieuw.';
+      ? t('achternaamFout')
+      : t('ietsMis');
   } finally {
     $('verder').disabled = false;
   }
@@ -158,9 +159,9 @@ function laadGegevens(g, delen) {
 }
 
 async function anderKind() {
-  if (heeftWijzigingen() && !(await bevestig('Niet verstuurd', [
-    el('p', {}, 'Je hebt wijzigingen die nog niet verstuurd zijn. Als je nu een ander kind kiest, gaan ze verloren.'),
-  ], 'Toch wisselen'))) return;
+  if (heeftWijzigingen() && !(await bevestig(t('nietVerstuurdTitel'), [
+    el('p', {}, t('nietVerstuurdTekst')),
+  ], t('tochWisselen')))) return;
   s.kind = null;
   $('werk').hidden = true;
   $('start').hidden = false;
@@ -173,9 +174,9 @@ async function wisselTab(tab) {
   const huidig = $('paneelMaaltijden').hidden ? 'opvang' : 'maaltijden';
   if (tab === huidig) return;
   const open = huidig === 'maaltijden' ? gewijzigdeMaaltijdMaanden() : gewijzigdeOpvangMaanden();
-  if (open.length && !(await bevestig('Ben je zeker?', [
-    el('p', {}, 'Je hebt nog niet verstuurd naar de leerkracht.'),
-  ], 'Wisselen'))) return;
+  if (open.length && !(await bevestig(t('zekerTitel'), [
+    el('p', {}, t('zekerTekst')),
+  ], t('wisselen')))) return;
   kiesTab(tab);
 }
 
@@ -193,7 +194,7 @@ function kiesTab(tab) {
 // ---------------------------------------------------------------------------
 
 function maandKiezer(actief, status, kies) {
-  const rij = el('div', { className: 'maanden', role: 'group', 'aria-label': 'Maand' },
+  const rij = el('div', { className: 'maanden', role: 'group', 'aria-label': t('maand') },
     s.maanden.map((m) => {
       const st = status(m);
       const klassen = ['maand', m === actief && 'actief', st.vast && 'vast',
@@ -211,7 +212,7 @@ function maandKiezer(actief, status, kies) {
 }
 
 function segment(opties, actief, kies) {
-  return el('div', { className: 'segment', role: 'group', 'aria-label': 'Hoe wil je invullen?' },
+  return el('div', { className: 'segment', role: 'group', 'aria-label': t('hoeInvullen') },
     opties.map(([waarde, tekst]) => el('button', {
       type: 'button', 'aria-pressed': String(waarde === actief), onclick: () => kies(waarde),
     }, tekst)));
@@ -228,18 +229,18 @@ function vrijeLijst(m) {
   }
   if (!groepen.length) return null;
   return el('ul', { className: 'vrije-lijst' }, groepen.map((g) => el('li', {},
-    `${g.naam}: ${g.van === g.tot ? korteDatum(g.van) : `${korteDatum(g.van)} tot ${korteDatum(g.tot)}`}`)));
+    `${vrijeDagNaam(g.naam)}: ${g.van === g.tot ? korteDatum(g.van) : t('periode', korteDatum(g.van), korteDatum(g.tot))}`)));
 }
 
 function verstuurBalk(soort, gewijzigd, laatst, versturen) {
   const status = gewijzigd.length
-    ? `Nog niet verstuurd: ${gewijzigd.map(maandLabel).join(', ')}`
-    : laatst ? `Laatst verstuurd op ${tijdstipLabel(laatst)}` : 'Nog niets verstuurd';
+    ? t('nogNietVerstuurd', gewijzigd.map(maandLabel).join(', '))
+    : laatst ? t('laatstVerstuurd', tijdstipLabel(laatst)) : t('nogNiets');
   return el('div', { className: 'verstuur-balk' + (gewijzigd.length ? ' plakt' : '') },
     el('p', { className: 'verstuur-status' + (gewijzigd.length ? ' open' : '') }, status),
     el('button', {
       type: 'button', className: 'knop hoofd breed', disabled: !gewijzigd.length || s.bezig, onclick: versturen,
-    }, s.bezig ? 'Bezig met versturen…' : `Verstuur ${soort}`));
+    }, s.bezig ? t('bezig') : t(soort === 'maaltijden' ? 'verstuurMaaltijden' : 'verstuurOpvang')));
 }
 
 function maandKop(m, status, slot) {
@@ -273,16 +274,16 @@ function tekenMaaltijden() {
       ingevuld: Object.keys(s.m.concept).some((d) => maandVan(d) === maand),
     }), (maand) => { s.m.maand = maand; s.m.selectie.clear(); tekenMaaltijden(); }),
     maandKop(m, open
-      ? `Aanpassen kan tot en met ${langeDatum(laatsteDagVoor(m))}.`
-      : m < maandVan(s.vandaag) ? 'Deze maand is voorbij.' : 'Deze maand is begonnen en ligt vast.', !open),
+      ? t('aanpassenTot', langeDatum(laatsteDagVoor(m)))
+      : m < maandVan(s.vandaag) ? t('maandVoorbij') : t('maandBegonnen'), !open),
     open ? maaltijdOpties(m) : null,
     kalender,
     el('div', { className: 'legende' },
-      el('span', {}, keuzeBol('warm'), 'Warm'),
-      el('span', {}, keuzeBol('vegi'), 'Vegi'),
-      el('span', {}, keuzeBol('boterhammen'), 'Boterhammen'),
-      el('span', {}, el('span', { className: 'bol legende-maan' }, maanIcoon()), 'Dommelen'),
-      el('span', {}, el('span', { className: 'bol uit' }), 'Geen maaltijd')),
+      el('span', {}, keuzeBol('warm'), t('soort').warm),
+      el('span', {}, keuzeBol('vegi'), t('soort').vegi),
+      el('span', {}, keuzeBol('boterhammen'), t('soort').boterhammen),
+      el('span', {}, el('span', { className: 'bol legende-maan' }, maanIcoon()), t('dommelen')),
+      el('span', {}, el('span', { className: 'bol uit' }), t('geenMaaltijd'))),
     vrijeLijst(m),
     verstuurBalk('maaltijden', gewijzigd, s.m.laatst, versturenMaaltijden));
 
@@ -290,7 +291,7 @@ function tekenMaaltijden() {
     const inhoud = maaltijdInhoud(s.m.concept[d]);
     return {
       uit: !open || !maaltijdMogelijk(d),
-      vrij: s.vrij[d] ?? null,
+      vrij: s.vrij[d] ? vrijeDagNaam(s.vrij[d]) : null,
       klasse: inhoud?.klasse,
       letter: inhoud?.letter,
       dommelen: inhoud?.dommelen,
@@ -306,7 +307,7 @@ function tekenMaaltijden() {
 
 // Rooster met de zes keuzes: kolommen warm, vegi, boterhammen; rijen zonder en met dommelen.
 function keuzeKnoppen(kies, uit = false) {
-  const soorten = [['warm', 'Warm'], ['vegi', 'Vegi'], ['boterhammen', 'Boterhammen']];
+  const soorten = ['warm', 'vegi', 'boterhammen'].map((soort) => [soort, t('kolom')[soort]]);
   const rij = (titel, voorvoegsel) => [
     el('span', { className: 'matrix-rij' }, titel),
     ...soorten.map(([soort]) => {
@@ -317,9 +318,9 @@ function keuzeKnoppen(kies, uit = false) {
       }, keuzeBol(code));
     }),
   ];
-  return el('div', { className: 'keuze-matrix', role: 'group', 'aria-label': 'Maaltijd' },
+  return el('div', { className: 'keuze-matrix', role: 'group', 'aria-label': t('maaltijd') },
     el('span'), soorten.map(([, titel]) => el('span', { className: 'matrix-kolom' }, titel)),
-    rij('Zonder dommelen', ''), rij('Met dommelen', 'dommelen_'));
+    rij(t('zonderDommelen'), ''), rij(t('metDommelen'), 'dommelen_'));
 }
 
 // Uitlegregel met rechts kleine linkknoppen (bv. "Leegmaken").
@@ -332,53 +333,53 @@ function linkKnop(tekst, actie, uit = false) {
 
 function maaltijdOpties(m) {
   const dagen = dagenVanMaand(m).filter(maaltijdMogelijk);
-  const naam = maandLabel(m).split(' ')[0];
-  const inhoud = [segment([['maand', 'Hele maand'], ['vast', 'Vaste dagen'], ['los', 'Losse dagen']], s.m.modus,
+  const naam = maandNaam(m);
+  const inhoud = [segment([['maand', t('heleMaand')], ['vast', t('vasteDagen')], ['los', t('losseDagen')]], s.m.modus,
     (modus) => { s.m.modus = modus; if (modus !== 'los') s.m.selectie.clear(); tekenMaaltijden(); })];
   // Leegmaken staat bij elke manier van invullen en maakt de hele maand leeg.
-  const leegmaken = () => linkKnop('Leegmaken', () => {
+  const leegmaken = () => linkKnop(t('leegmaken'), () => {
     vulMaaltijden(dagen, null);
     s.m.selectie.clear();
     tekenMaaltijden();
-    toast(`${hoofdletter(naam)} leeggemaakt`);
+    toast(t('leeggemaakt', hoofdletter(naam)));
   });
 
   if (s.m.modus === 'maand') {
     inhoud.push(
-      uitlegRij(`Eén tik vult alle ${dagen.length} dagen van ${naam} in.`, leegmaken()),
+      uitlegRij(t('eenTik', dagen.length, naam), leegmaken()),
       keuzeKnoppen((code) => {
         vulMaaltijden(dagen, code);
         tekenMaaltijden();
-        toast(`Hele maand: ${KEUZE[code].label.toLowerCase()}`);
+        toast(t('heleMaandToast', KEUZE[code].label.toLowerCase()));
       }));
   } else if (s.m.modus === 'vast') {
     inhoud.push(
-      uitlegRij('Kies per weekdag, voor heel de maand.', leegmaken()),
+      uitlegRij(t('perWeekdag'), leegmaken()),
       el('div', { className: 'vaste-dagen' }, MAALTIJDDAGEN.map((wd) => el('label', { className: 'vaste-dag' },
-        el('span', {}, hoofdletter(DAGEN[wd - 1])),
+        el('span', {}, hoofdletter(dagNaam(wd))),
         el('select', { onchange: (e) => { s.m.vast[wd] = e.target.value; } },
-          el('option', { value: '', selected: !s.m.vast[wd] }, 'Niet wijzigen'),
+          el('option', { value: '', selected: !s.m.vast[wd] }, t('nietWijzigen')),
           KEUZES.map((k) => el('option', { value: k.code, selected: s.m.vast[wd] === k.code }, k.label)))))),
       el('button', {
         type: 'button', className: 'knop hoofd breed', onclick: () => {
           const gekozen = Object.entries(s.m.vast).filter(([, code]) => code);
-          if (!gekozen.length) return toast('Kies eerst bij minstens één weekdag een maaltijd.');
+          if (!gekozen.length) return toast(t('eerstWeekdag'));
           for (const [wd, code] of gekozen) {
             vulMaaltijden(dagen.filter((d) => weekdag(d) === Number(wd)), code);
           }
           tekenMaaltijden();
-          toast(`Toegepast op ${naam}`);
+          toast(t('toegepast', naam));
         },
-      }, `Toepassen op ${naam}`));
+      }, t('toepassen', naam)));
   } else {
     const n = s.m.selectie.size;
     inhoud.push(
       uitlegRij(n
-        ? `${meervoud(n, 'dag', 'dagen')} gekozen, kies de maaltijd.`
-        : 'Tik dagen aan in de kalender, kies dan de maaltijd.', leegmaken()),
+        ? t('dagenGekozen', n)
+        : t('tikDagen'), leegmaken()),
       n ? el('div', { className: 'uitleg-rij selectie-rij' },
-        linkKnop('Gekozen dagen leegmaken', () => { vulMaaltijden(s.m.selectie, null); s.m.selectie.clear(); tekenMaaltijden(); }),
-        linkKnop('Selectie wissen', () => { s.m.selectie.clear(); tekenMaaltijden(); })) : null,
+        linkKnop(t('gekozenLeegmaken'), () => { vulMaaltijden(s.m.selectie, null); s.m.selectie.clear(); tekenMaaltijden(); }),
+        linkKnop(t('selectieWissen'), () => { s.m.selectie.clear(); tekenMaaltijden(); })) : null,
       keuzeKnoppen((code) => {
         vulMaaltijden(s.m.selectie, code);
         s.m.selectie.clear();
@@ -392,14 +393,15 @@ async function versturenMaaltijden() {
   const maanden = gewijzigdeMaaltijdMaanden();
   if (!maanden.length) return;
   const naam = `${s.kind.voornaam} ${s.kind.achternaam}`;
-  const ok = await bevestig('Maaltijden versturen?', [
-    el('p', {}, 'Je verstuurt de maaltijden van ', el('b', {}, naam), ' voor:'),
+  const [voor, na] = t('verstuurtMaaltijden');
+  const ok = await bevestig(t('maaltijdenTitel'), [
+    el('p', {}, voor, el('b', {}, naam), na),
     el('ul', {}, maanden.map((m) => {
       const n = Object.keys(s.m.concept).filter((d) => maandVan(d) === m).length;
-      return el('li', {}, el('b', {}, hoofdletter(maandLabel(m))), n ? `: ${meervoud(n, 'dag', 'dagen')}` : ': leeggemaakt');
+      return el('li', {}, el('b', {}, hoofdletter(maandLabel(m))), `: ${n ? t('dagen1', n) : t('leeggemaaktItem')}`);
     })),
-    el('p', {}, `Vanaf de eerste dag van een maand kan je die maand niet meer aanpassen. ${hoofdletter(maandLabel(maanden[0]))} ligt vast vanaf ${langeDatum(`${maanden[0]}-01`)}.`),
-  ]);
+    el('p', {}, t('vastVanaf', hoofdletter(maandLabel(maanden[0])), langeDatum(`${maanden[0]}-01`))),
+  ], t('versturen'));
   if (!ok) return;
   const keuzes = Object.fromEntries(Object.entries(s.m.concept).filter(([d]) => maanden.includes(maandVan(d))));
   await verstuur(() => api.maaltijdenVersturen(s.kind.id, s.achternaam, maanden, keuzes), { maaltijden: true });
@@ -429,14 +431,14 @@ function tekenOpvang() {
       ingevuld: [...s.o.concept].some((d) => maandVan(d) === maand),
     }), (maand) => { s.o.maand = maand; tekenOpvang(); }),
     maandKop(m, openDagen.length
-      ? 'Je kan elke dag aanpassen tot en met de dag voordien.'
-      : m < maandVan(s.vandaag) ? 'Deze maand is voorbij.' : 'Deze maand kan je niet meer aanpassen.', !openDagen.length),
+      ? t('opvangElkeDag')
+      : m < maandVan(s.vandaag) ? t('maandVoorbij') : t('opvangNietMeer'), !openDagen.length),
     openDagen.length ? opvangOpties(m, openDagen) : null,
     kalender,
     el('div', { className: 'legende' },
-      el('span', {}, el('span', { className: 'bol o-aan' }), 'Opvang'),
-      el('span', {}, el('span', { className: 'bol uit' }), 'Geen opvang mogelijk'),
-      el('span', {}, 'Woensdag: tot 14u')),
+      el('span', {}, el('span', { className: 'bol o-aan' }), t('opvang')),
+      el('span', {}, el('span', { className: 'bol uit' }), t('geenOpvangMogelijk')),
+      el('span', {}, t('woensdagLegende'))),
     vrijeLijst(m),
     verstuurBalk('opvang', gewijzigd, s.o.laatst, versturenOpvang));
 
@@ -444,10 +446,10 @@ function tekenOpvang() {
     const aan = s.o.concept.has(d);
     return {
       uit: !opvangOpen(d),
-      vrij: s.vrij[d] ?? null,
+      vrij: s.vrij[d] ? vrijeDagNaam(s.vrij[d]) : null,
       klasse: aan ? 'o-aan' : null,
-      letter: aan ? (weekdag(d) === 3 ? 'tot 14u' : 'opvang') : null,
-      titel: aan ? (weekdag(d) === 3 ? 'opvang tot 14u' : 'opvang') : null,
+      letter: aan ? t(weekdag(d) === 3 ? 'dagTot14' : 'dagOpvang') : null,
+      titel: aan ? t(weekdag(d) === 3 ? 'titelTot14' : 'titelOpvang') : null,
     };
   }, (d) => {
     zetOpvang([d], !s.o.concept.has(d));
@@ -456,18 +458,18 @@ function tekenOpvang() {
 }
 
 function opvangOpties(m, openDagen) {
-  const naam = maandLabel(m).split(' ')[0];
-  const inhoud = [segment([['maand', 'Hele maand'], ['week', 'Per week'], ['vast', 'Vaste dagen']], s.o.modus,
+  const naam = maandNaam(m);
+  const inhoud = [segment([['maand', t('heleMaand')], ['week', t('perWeek')], ['vast', t('vasteDagen')]], s.o.modus,
     (modus) => { s.o.modus = modus; tekenOpvang(); })];
 
   if (s.o.modus === 'maand') {
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, `Alle ${openDagen.length} dagen van ${naam} die nog kunnen. Losse dagen tik je in de kalender aan of uit.`),
+      el('p', { className: 'opties-uitleg' }, t('alleDagen', openDagen.length, naam)),
       el('div', { className: 'opties-rij' },
         el('button', { type: 'button', className: 'knop hoofd', onclick: () => { zetOpvang(openDagen, true); tekenOpvang(); } },
-          'Elke dag opvang'),
+          t('elkeDagOpvang')),
         el('button', { type: 'button', className: 'knop', onclick: () => { zetOpvang(openDagen, false); tekenOpvang(); } },
-          'Geen opvang')));
+          t('geenOpvang'))));
   } else if (s.o.modus === 'week') {
     const weken = new Map();
     for (const d of openDagen) {
@@ -476,35 +478,34 @@ function opvangOpties(m, openDagen) {
       weken.get(maandag).push(d);
     }
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, 'Tik op een week om ze aan of uit te zetten.'),
+      el('p', { className: 'opties-uitleg' }, t('tikWeek')),
       el('div', { className: 'weken' }, [...weken].map(([maandag, dagen]) => {
         const aan = dagen.filter((d) => s.o.concept.has(d)).length;
         const [eerste, laatste] = [dagen[0], dagen.at(-1)];
-        const label = maandVan(eerste) === maandVan(laatste)
-          ? `${Number(eerste.slice(8))} tot ${korteDatum(laatste).slice(3)}`
-          : `${korteDatum(eerste).slice(3)} tot ${korteDatum(laatste).slice(3)}`;
+        const label = t('week', { d: Number(eerste.slice(8)), dm: dagMaand(eerste) }, { dm: dagMaand(laatste) },
+          maandVan(eerste) === maandVan(laatste));
         return el('button', {
           type: 'button', className: 'week' + (aan === dagen.length ? ' aan' : ''),
           'aria-pressed': String(aan === dagen.length),
           onclick: () => { zetOpvang(dagen, aan !== dagen.length); tekenOpvang(); },
-        }, `Week van ${label}`, el('small', {}, `${aan}/${dagen.length} dagen`));
+        }, label, el('small', {}, t('weekDagen', aan, dagen.length)));
       })));
   } else {
     inhoud.push(
-      el('p', { className: 'opties-uitleg' }, `Kies weekdagen voor heel ${naam}.`),
+      el('p', { className: 'opties-uitleg' }, t('kiesWeekdagen', naam)),
       el('div', { className: 'weekdagen' }, [1, 2, 3, 4, 5].map((wd) => el('label', { className: 'vinkje' },
         el('input', {
           type: 'checkbox', checked: s.o.vast.has(wd),
           onchange: (e) => { if (e.target.checked) s.o.vast.add(wd); else s.o.vast.delete(wd); },
         }),
-        wd === 3 ? 'Woensdag tot 14u' : hoofdletter(DAGEN[wd - 1])))),
+        wd === 3 ? t('woensdagTot14') : hoofdletter(dagNaam(wd))))),
       el('div', { className: 'opties-rij' }, [true, false].map((aan) => el('button', {
         type: 'button', className: aan ? 'knop hoofd' : 'knop', onclick: () => {
-          if (!s.o.vast.size) return toast('Vink eerst minstens één weekdag aan.');
+          if (!s.o.vast.size) return toast(t('eerstVinken'));
           zetOpvang(openDagen.filter((d) => s.o.vast.has(weekdag(d))), aan);
           tekenOpvang();
         },
-      }, aan ? 'Aanzetten' : 'Uitzetten'))));
+      }, aan ? t('aanzetten') : t('uitzetten')))));
   }
   return el('div', { className: 'opties' }, inhoud);
 }
@@ -513,14 +514,15 @@ async function versturenOpvang() {
   const maanden = gewijzigdeOpvangMaanden();
   if (!maanden.length) return;
   const naam = `${s.kind.voornaam} ${s.kind.achternaam}`;
-  const ok = await bevestig('Opvang versturen?', [
-    el('p', {}, 'Je verstuurt de opvang van ', el('b', {}, naam), ' voor:'),
+  const [voor, na] = t('verstuurtOpvang');
+  const ok = await bevestig(t('opvangTitel'), [
+    el('p', {}, voor, el('b', {}, naam), na),
     el('ul', {}, maanden.map((m) => {
       const n = dagenVanMaand(m).filter((d) => d > s.vandaag && s.o.concept.has(d)).length;
-      return el('li', {}, el('b', {}, hoofdletter(maandLabel(m))), n ? `: ${meervoud(n, 'dag', 'dagen')} opvang` : ': geen opvang');
+      return el('li', {}, el('b', {}, hoofdletter(maandLabel(m))), `: ${n ? t('dagenOpvang', n) : t('geenOpvangItem')}`);
     })),
-    el('p', {}, 'Je kan elke dag nog aanpassen tot en met de dag voordien.'),
-  ]);
+    el('p', {}, t('opvangNogAanpassen')),
+  ], t('versturen'));
   if (!ok) return;
   const van = `${s.maanden[0]}-01`;
   const tot = dagenVanMaand(s.maanden.at(-1)).at(-1);
@@ -537,9 +539,9 @@ async function verstuur(actie, delen) {
   try {
     await actie();
     laadGegevens(await api.gegevens(s.kind.id, s.achternaam), delen);
-    toast('Verstuurd. Dank je wel!');
+    toast(t('verstuurd'));
   } catch (fout) {
-    toast(fout.message || 'Versturen mislukt. Probeer het opnieuw.');
+    toast(foutTekst(fout));
   } finally {
     s.bezig = false;
     tekenActief();
@@ -550,7 +552,17 @@ function tekenActief() {
   if ($('paneelMaaltijden').hidden) tekenOpvang(); else tekenMaaltijden();
 }
 
-function bevestig(titel, inhoud, jaTekst = 'Versturen') {
+// Foutmeldingen van de database zijn Nederlands; in een andere taal tonen we een vertaalde, algemenere zin.
+function foutTekst(fout) {
+  const tekst = fout?.message ?? '';
+  if (taal() === 'nl') return tekst || t('versturenMislukt');
+  if (tekst.includes('achternaam')) return t('achternaamFout');
+  if (tekst.includes('begonnen')) return t('foutBegonnen');
+  if (/^Op |hoort niet bij|Onbekende keuze/.test(tekst)) return t('foutDag');
+  return t('versturenMislukt');
+}
+
+function bevestig(titel, inhoud, jaTekst) {
   const dialoog = $('bevestig');
   $('bevestigTitel').textContent = titel;
   $('bevestigTekst').replaceChildren(...inhoud);
@@ -581,5 +593,19 @@ window.addEventListener('beforeunload', (e) => {
   if (s.kind && heeftWijzigingen()) e.preventDefault();
 });
 
+// Andere taal gekozen: de vaste teksten zijn al vertaald, de rest wordt opnieuw getekend.
+function taalGewisseld() {
+  themaKnop($('themaKnop'), false);
+  const klasLeeg = $('klas').querySelector('option[value=""]');
+  if (klasLeeg && s.klassen.length) klasLeeg.textContent = t('kiesKlas');
+  const kindLeeg = $('kind').querySelector('option[value=""]');
+  if (kindLeeg && s.kinderen.length) kindLeeg.textContent = t('kiesKind');
+  else if (kindLeeg && !$('klas').value) kindLeeg.textContent = t('eerstKlas');
+  $('startFout').textContent = '';
+  if (s.kind) tekenActief();
+}
+
+vertaalPagina();
+taalKnop($('taal'), $('taalCode'), taalGewisseld);
 themaKnop($('themaKnop'));
 start();
