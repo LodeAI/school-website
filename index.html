@@ -12,9 +12,9 @@
   <link rel="preload" href="fonts/atkinson-700.woff2" as="font" type="font/woff2" crossorigin>
   <script>document.documentElement.dataset.thema = /(?:^|; )thema=donker/.test(document.cookie) ? 'donker' : 'licht';</script>
   <script>(function () {
-    var h = document.documentElement, c = (document.cookie.match(/(?:^|; )taal=(nl|en|fr|es|it|ko)\b/) || [])[1] || 'nl';
+    var h = document.documentElement, c = (document.cookie.match(/(?:^|; )taal=(nl|en|fr|de|es|it|ko)\b/) || [])[1] || 'nl';
     h.dataset.taal = c;
-    h.lang = { nl: 'nl-BE', en: 'en-GB', fr: 'fr-BE', es: 'es-ES', it: 'it-IT', ko: 'ko-KR' }[c];
+    h.lang = { nl: 'nl-BE', en: 'en-GB', fr: 'fr-BE', de: 'de-DE', es: 'es-ES', it: 'it-IT', ko: 'ko-KR' }[c];
     if (c !== 'nl') h.classList.add('vertalen');
   })();</script>
   <link rel="stylesheet" href="css/stijl.css">

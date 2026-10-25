@@ -350,7 +350,7 @@ function maaltijdOpties(m) {
       keuzeKnoppen((code) => {
         vulMaaltijden(dagen, code);
         tekenMaaltijden();
-        toast(t('heleMaandToast', KEUZE[code].label.toLowerCase()));
+        toast(t('heleMaandToast', KEUZE[code].label));
       }));
   } else if (s.m.modus === 'vast') {
     inhoud.push(

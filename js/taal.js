@@ -5,7 +5,7 @@
 import { TEKSTEN } from './teksten.js';
 
 export const TALEN = [
-  ['nl', 'Nederlands'], ['en', 'English'], ['fr', 'Français'], ['es', 'Español'], ['it', 'Italiano'], ['ko', '한국어'],
+  ['nl', 'Nederlands'], ['en', 'English'], ['fr', 'Français'], ['de', 'Deutsch'], ['es', 'Español'], ['it', 'Italiano'], ['ko', '한국어'],
 ];
 const PAD = new URL('../', import.meta.url).pathname; // de hoofdmap van de site, zoals bij het thema
 
