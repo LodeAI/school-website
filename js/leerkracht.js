@@ -10,6 +10,8 @@ import {
 } from './kalender.js';
 
 const $ = (id) => document.getElementById(id);
+// Verhoog samen met VERSIE in leerkracht/sw.js.
+const VERSIE = '1.2';
 const vandaag = vandaagBrussel();
 const maanden = schooljaarMaanden(vandaag);
 const VAN = `${maanden[0]}-01`;
@@ -25,11 +27,14 @@ async function start() {
   $('demoBand').hidden = !DEMO;
   if ('serviceWorker' in navigator && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});
   navigator.serviceWorker?.addEventListener('message', (e) => {
+    if (e.data?.versie) $('versieSw').textContent = ` (meldingen ${e.data.versie})`;
     if (e.data?.openen) {
       laatsteMeldingTik = Date.now();
       location.href = e.data.openen;
     }
   });
+  $('versie').textContent = `versie ${VERSIE}`;
+  navigator.serviceWorker?.ready.then((r) => r.active?.postMessage({ vraag: 'versie' })).catch(() => {});
   if (await api.sessie()) await openApp();
   else toonAanmelden();
 }

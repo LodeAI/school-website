@@ -1,5 +1,8 @@
 // Service worker van de leerkrachtensite: toont pushmeldingen en opent bij een tik de fiche van het kind.
 
+// Verhoog samen met VERSIE in js/leerkracht.js; onderaan de leerkrachtenpagina staan ze allebei.
+const VERSIE = '1.2';
+
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
@@ -22,9 +25,8 @@ async function bolletjeZetten(vanServer = 0) {
   if ('setAppBadge' in self.navigator) await self.navigator.setAppBadge(n);
 }
 
-// De melding komt in het formaat van declarative web push ({ web_push: 8030, notification, app_badge }).
-// Op een iPhone met iOS 18.4 of nieuwer toont iOS ze zelf en komt dit niet aan bod; elders wel.
-// Het oude formaat ({ title, body, url }) blijft werken.
+// De melding komt als { title, body, url, tag, app_badge }. Het formaat van declarative web push
+// ({ web_push, notification }) wordt ook nog gelezen.
 self.addEventListener('push', (e) => {
   let bericht = {};
   try { bericht = e.data ? e.data.json() : {}; } catch { bericht = { body: e.data?.text() }; }
@@ -34,11 +36,15 @@ self.addEventListener('push', (e) => {
     await self.registration.showNotification(n.title || bericht.title || 'Konijnenklas', {
       body: n.body || bericht.body || '',
       icon: '../img/icoon-192.png',
-      tag: n.tag,
       data: { url: n.navigate || bericht.url || './' },
     });
     await bolletjeZetten(getal).catch(() => {});
   })());
+});
+
+// De pagina vraagt de versie op voor de voettekst.
+self.addEventListener('message', (e) => {
+  if (e.data?.vraag === 'versie') e.source?.postMessage({ versie: VERSIE });
 });
 
 self.addEventListener('notificationclick', (e) => {

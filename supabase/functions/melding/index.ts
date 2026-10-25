@@ -61,21 +61,10 @@ Deno.serve(async (req) => {
     .gt("tijdstip", geopend?.tijdstip ?? "1970-01-01");
   const bolletje = Math.max(1, count ?? 0);
 
-  // Declarative web push (iOS 18.4 en nieuwer): iOS toont de melding en zet het bolletje zelf, zonder
-  // service worker. app_badge staat op het hoogste niveau (huidige WebKit) en in notification (iOS 18).
-  // Andere browsers geven dit aan de service worker, die hetzelfde formaat leest.
-  const melding = {
-    web_push: 8030,
-    notification: {
-      title: bericht.title,
-      body: bericht.body,
-      navigate: bericht.url,
-      lang: "nl-BE",
-      tag: bericht.tag,
-      app_badge: bolletje,
-    },
-    app_badge: bolletje,
-  };
+  // Gewoon formaat voor de service worker, die de melding toont en het bolletje zet met dit getal.
+  // Niet het formaat van declarative web push: daarmee kwam op de iPhone geen enkele melding meer aan
+  // (25 oktober 2026), al nam Apple ze aan.
+  const melding = { ...bericht, app_badge: bolletje };
 
   const { data: abonnementen } = await supabase.from("push_abonnementen").select("endpoint, p256dh, auth");
   let verstuurd = 0;
