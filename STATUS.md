@@ -1,5 +1,15 @@
 # Status
 
+## 2026-11-08: site laadde geen gegevens
+
+Lode: konijnenklas.lvit.be laadt de gegevens niet. **Oorzaak:** het gratis Supabase-project stond op `INACTIVE`. Supabase pauzeert een gratis project na een week zonder verkeer (laatste gebruik rond 25 oktober).
+
+- **Hersteld** via de beheer-API (`POST /v1/projects/nhpfvjkptfghldibteer/restore`), na een paar minuten `ACTIVE_HEALTHY`. Geen gegevens verloren: `ouder_klassen` en `ouder_kinderen` geven de Konijnenklas en 9 kinderen.
+- **Voorkomen:** GitHub Action `.github/workflows/supabase-wakker.yml` roept elke dag om 06.17 UTC `ouder_klassen` aan met de publieke sleutel. Mislukt de ping, dan faalt de Action en mailt GitHub. Met de hand starten kan via "Run workflow". Let op: GitHub zet geplande Actions uit in een repo zonder commits gedurende 60 dagen; dan komt er een mail om ze weer aan te zetten.
+- Staat het project toch weer stil: dashboard van Supabase, "Restore project", of de API-opdracht hierboven met het token uit de sleutelhanger (`supabase-school`).
+
+**Open:** nakijken dat de eerste geplande run van de Action groen is.
+
 ## 2026-10-25, avond: opgelost
 
 Lode: geen rood bolletje op het icoon bij een nieuwe inzending, en telkens opnieuw moeten inloggen als leerkracht. **Volgens Lode werkt alles nu (meldingen, bolletje, aangemeld blijven).**
